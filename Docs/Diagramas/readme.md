@@ -1,51 +1,7 @@
 classDiagram
-    class Usuario {
-        -int id
-        -String nome
-        -String email
-        -String senhaHash
-        -TipoPerfil tipoPerfil
-        -Double saldoCarteira
-        +autenticar() boolean
-        +consultarSaldo() Double
-        +atualizarSaldo(valor: Double) void
-    }
+    direction TB
 
-    class Vaga {
-        -int id
-        -int contratanteId
-        -int trabalhadorId
-        -String titulo
-        -String descricao
-        -Double valor
-        -StatusVaga status
-        +criarVaga() void
-        +selecionarTrabalhador(trabalhadorId: int) void
-        +concluirVaga() void
-        +cancelarVaga() void
-    }
-
-    class Candidatura {
-        -int id
-        -int vagaId
-        -int trabalhadorId
-        -DateTime dataCandidatura
-        -StatusCandidatura status
-        +aceitar() void
-        +recusar() void
-    }
-
-    class Transacao {
-        -int id
-        -int vagaId
-        -Double valor
-        -StatusTransacao status
-        -DateTime dataCriacao
-        +bloquearSaldo() boolean
-        +liberarSaldo() boolean
-        +estornarSaldo() boolean
-    }
-
+    %% Enums
     class TipoPerfil {
         <<enumeration>>
         CONTRATANTE
@@ -60,27 +16,99 @@ classDiagram
         CANCELADA
     }
 
-    class StatusCandidatura {
+    class TipoTransacao {
         <<enumeration>>
-        PENDENTE
-        ACEITA
-        RECUSADA
+        DEPOSITO_SIMULADO
+        BLOQUEIO_GARANTIA
+        ESTORNO_CANCELAMENTO
+        PAGAMENTO_RECEBIDO
     }
 
-    class StatusTransacao {
-        <<enumeration>>
-        RETIDO
-        LIBERADO
-        ESTORNADO
+    %% Classes de Domínio / Modelos
+    class Usuario {
+        - Integer id
+        - String nome
+        - String email
+        - String senha
+        - String telefone
+        - Date dataNascimento
+        - TipoPerfil perfil
+        + Boolean ehMaiorDeIdade()
+        + Boolean validarSenha(String senha)
     }
 
-    Usuario "1" -- "*" Vaga : publica
-    Usuario "1" -- "*" Vaga : realiza
-    Usuario "1" -- "*" Candidatura : se candidata
-    Vaga "1" -- "*" Candidatura : recebe
-    Vaga "1" -- "0..1" Transacao : possui garantia
+    class CarteiraVirtual {
+        - Integer id
+        - BigDecimal saldoDisponivel
+        - BigDecimal saldoBloqueado
+        + void creditar(BigDecimal valor)
+        + Boolean bloquearSaldo(BigDecimal valor)
+        + void estornarSaldo(BigDecimal valor)
+        + void transferirSaldoBloqueado(CarteiraVirtual destino, BigDecimal valor)
+    }
 
-    Usuario ..> TipoPerfil
-    Vaga ..> StatusVaga
-    Candidatura ..> StatusCandidatura
-    Transacao ..> StatusTransacao StatusTransacao
+    class VagaBico {
+        - Integer id
+        - String titulo
+        - String descricao
+        - BigDecimal valorDiaria
+        - Date dataServico
+        - String horario
+        - String bairro
+        - StatusVaga status
+        - Date dataCriacao
+        + Boolean podeSerCancelada()
+        + void alterarStatus(StatusVaga novoStatus)
+    }
+
+    class Candidatura {
+        - Integer id
+        - Date dataCandidatura
+        - Boolean selecionado
+        + void aprovarCandidato()
+    }
+
+    class TransacaoFinanceira {
+        - Integer id
+        - BigDecimal valor
+        - TipoTransacao tipo
+        - Date dataHora
+        - String descricao
+    }
+
+    %% Controladores (Camida Controller - MVC)
+    class AutenticacaoController {
+        + String cadastrarUsuario(Usuario usuario)
+        + String realizarLogin(String email, String senha)
+    }
+
+    class VagaController {
+        + String publicarBico(VagaBico vaga, Integer contratanteId)
+        + List~VagaBico~ listarFeedVagas(String ordenacao)
+        + String meCandidatar(Integer vagaId, Integer trabalhadorId)
+        + String selecionarCandidato(Integer candidaturaId)
+        + String finalizarServico(Integer vagaId)
+        + String cancelarBico(Integer vagaId)
+    }
+
+    class CarteiraController {
+        + BigDecimal consultarSaldo(Integer usuarioId)
+        + String adicionarSaldoSimulado(Integer usuarioId, BigDecimal valor)
+    }
+
+    %% Relacionamentos de Domínio
+    Usuario "1" -- "1" CarteiraVirtual : possui >
+    Usuario "1" -- "0..*" VagaBico : publica (Contratante) >
+    Usuario "1" -- "0..*" Candidatura : realiza (Trabalhador) >
+    
+    VagaBico "1" -- "0..*" Candidatura : recebe >
+    VagaBico "0..1" -- "1" Usuario : contratado (Trabalhador) >
+    
+    CarteiraVirtual "1" -- "0..*" TransacaoFinanceira : registra >
+    VagaBico "1" -- "0..*" TransacaoFinanceira : gera >
+
+    %% Dependências de Controle
+    AutenticacaoController ..> Usuario : gerencia
+    VagaController ..> VagaBico : gerencia
+    VagaController ..> Candidatura : manipula
+    CarteiraController ..> CarteiraVirtual : gerencia
