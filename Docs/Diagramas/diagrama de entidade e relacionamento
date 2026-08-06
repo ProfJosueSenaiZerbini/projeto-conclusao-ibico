@@ -1,0 +1,62 @@
+erDiagram
+
+    USUARIO {
+        int id PK
+        string nome
+        string email
+        string senha_hash
+        string telefone
+        date data_nascimento
+        enum tipo_perfil "CONTRATANTE, TRABALHADOR"
+        datetime data_criacao
+    }
+
+    CARTEIRA_VIRTUAL {
+        int id PK
+        int usuario_id FK
+        decimal saldo_disponivel
+        decimal saldo_bloqueado
+    }
+
+    VAGA_BICO {
+        int id PK
+        int contratante_id FK
+        int trabalhador_selecionado_id FK "Null se ainda sem selecionado"
+        string titulo
+        string descricao
+        decimal valor_diaria
+        date data_servico
+        string horario
+        string bairro
+        enum status "ABERTA, EM_ANDAMENTO, CONCLUIDA, CANCELADA"
+        datetime data_criacao
+    }
+
+    CANDIDATURA {
+        int id PK
+        int vaga_id FK
+        int trabalhador_id FK
+        boolean selecionado
+        datetime data_candidatura
+    }
+
+    TRANSACAO_FINANCEIRA {
+        int id PK
+        int carteira_id FK
+        int vaga_id FK "Opcional (para rastreio)"
+        decimal valor
+        enum tipo_transacao "DEPOSITO_SIMULADO, BLOQUEIO_GARANTIA, ESTORNO_CANCELAMENTO, PAGAMENTO_RECEBIDO"
+        string descricao
+        datetime data_hora
+    }
+
+    %% Relacionamentos
+    USUARIO ||--|| CARTEIRA_VIRTUAL : "possui"
+    USUARIO ||--o{ VAGA_BICO : "publica (Contratante)"
+    USUARIO ||--o{ VAGA_BICO : "executa (Trabalhador)"
+    USUARIO ||--o{ CANDIDATURA : "realiza (Trabalhador)"
+    
+    VAGA_BICO ||--o{ CANDIDATURA : "recebe"
+    VAGA_BICO ||--o{ TRANSACAO_FINANCEIRA : "gera"
+    
+    CARTEIRA_VIRTUAL ||--o{ TRANSACAO_FINANCEIRA : "registra"
