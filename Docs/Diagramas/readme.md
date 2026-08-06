@@ -83,4 +83,4 @@ classDiagram
     Usuario ..> TipoPerfil
     Vaga ..> StatusVaga
     Candidatura ..> StatusCandidatura
-    Transacao ..> StatusTransacao
+    Transacao ..> StatusTransacao StatusTransacao
