@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ibico — Encontre sua próxima oportunidade</title>
+    <link rel="stylesheet" href="/css/homeTrabalhador.css">
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">Ibico</div>
+        <nav>
+            <a href="#" class="active" data-page="inicio">início</a>
+            <a href="#" data-page="carteira">Carteira</a>
+            <a href="#" data-page="historico">Histórico</a>
+        </nav>
+        <div class="header-icons">
+            <button class="icon-btn" id="bellBtn" title="Notificações">
+                <span class="dot show" id="bellDot"></span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+            </button>
+            <button class="icon-btn" id="profileBtn" title="Perfil">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20c1.5-4 5-6 8-6s6.5 2 8 6" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="top-row">
+            <div class="search-wrap">
+                <h1 class="title">Encontre sua próxima oportunidade</h1>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input type="text" id="searchInput" placeholder="Qual serviço você procura hoje?">
+            </div>
+            <div class="sort-wrap">
+                <span class="sort-label">Ordenar por</span>
+                <select class="sort-select" id="sortSelect">
+                    <option>Mais Recentes</option>
+                    <option>Maior Preço</option>
+                    <option>Menor Preço</option>
+                    <option>Mais Próximos</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid" id="cardsGrid"></div>
+
+        <div class="load-more-wrap">
+            <button class="btn-outline" id="loadMoreBtn">Carregar mais vagas</button>
+        </div>
+    </main>
+
+    <footer>
+        <div>
+            <div class="logo">Ibico</div>
+            <div class="footer-copy">© 2024 Ibico Intermediação Ltda. Inspirado na clareza da Araponga.</div>
+        </div>
+        <div class="footer-links">
+            <a href="#">Termos</a>
+            <a href="#">Privacidade</a>
+            <a href="#">Suporte</a>
+            <a href="#">Trabalhe Conosco</a>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const jobs = [
+            { title: "Pintura Residencial Interna", loc: "Jardim Paulista, São Paulo", price: "R$ 450,00", date: "15 de Junho, 2024", time: "Início às 08:30", name: "Ricardo M.", avatar: "https://i.pravatar.cc/64?img=12" },
+            { title: "Montagem de Móveis (Cozinha)", loc: "Moema, São Paulo", price: "R$ 280,00", date: "16 de Junho, 2024", time: "Horário flexível", name: "Fernanda S.", avatar: "https://i.pravatar.cc/64?img=47" },
+            { title: "Limpeza Pós-Obra Detalhada", loc: "Pinheiros, São Paulo", price: "R$ 600,00", date: "18 de Junho, 2024", time: "Dia inteiro (09:00 - 18:00)", name: "Lucas G.", avatar: "https://i.pravatar.cc/64?img=33" },
+            { title: "Manutenção Elétrica (Troca de Fiação)", loc: "Itaim Bibi, São Paulo", price: "R$ 320,00", date: "20 de Junho, 2024", time: "Período da Tarde", name: "Beatriz L.", avatar: "https://i.pravatar.cc/64?img=25" },
+        ];
+
+        const extraJobs = [
+            { title: "Jardinagem e Poda", loc: "Vila Madalena, São Paulo", price: "R$ 220,00", date: "22 de Junho, 2024", time: "Manhã", name: "Paulo H.", avatar: "https://i.pravatar.cc/64?img=15" },
+            { title: "Instalação de Ar Condicionado", loc: "Perdizes, São Paulo", price: "R$ 380,00", date: "23 de Junho, 2024", time: "Horário flexível", name: "Camila R.", avatar: "https://i.pravatar.cc/64?img=48" },
+        ];
+
+        const grid = document.getElementById('cardsGrid');
+        const toast = document.getElementById('toast');
+        let toastTimer;
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        function renderCard(job) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+    <div class="card-head">
+      <div>
+        <h3>${job.title}</h3>
+        <div class="location">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${job.loc}
+        </div>
+      </div>
+      <span class="price-pill">${job.price}</span>
+    </div>
+    <div class="meta">
+      <div class="meta-row">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        ${job.date}
+      </div>
+      <div class="meta-row">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        ${job.time}
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="person">
+        <img class="avatar" src="${job.avatar}" alt="${job.name}">
+        ${job.name}
+      </div>
+      <button class="btn-apply">Candidatar-se</button>
+    </div>
+  `;
+            const btn = card.querySelector('.btn-apply');
+            btn.addEventListener('click', () => {
+                if (btn.classList.contains('applied')) return;
+                btn.textContent = 'Candidatura enviada ✓';
+                btn.classList.add('applied');
+                btn.disabled = true;
+                showToast(`Você se candidatou para "${job.title}"`);
+            });
+            return card;
+        }
+
+        jobs.forEach(j => grid.appendChild(renderCard(j)));
+
+        // Nav links
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+                link.classList.add('active');
+                showToast(`Navegando para "${link.textContent}"`);
+            });
+        });
+
+        // Bell
+        document.getElementById('bellBtn').addEventListener('click', () => {
+            document.getElementById('bellDot').classList.remove('show');
+            showToast('Você não tem novas notificações');
+        });
+
+        // Profile
+        document.getElementById('profileBtn').addEventListener('click', () => {
+            showToast('Abrindo seu perfil...');
+        });
+
+        // Search
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.toLowerCase();
+            document.querySelectorAll('.card').forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const loc = card.querySelector('.location').textContent.toLowerCase();
+                card.style.display = (title.includes(q) || loc.includes(q)) ? '' : 'none';
+            });
+        });
+
+        // Sort
+        document.getElementById('sortSelect').addEventListener('change', (e) => {
+            showToast(`Ordenado por: ${e.target.value}`);
+        });
+
+        // Load more
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        loadMoreBtn.addEventListener('click', () => {
+            extraJobs.forEach(j => grid.appendChild(renderCard(j)));
+            loadMoreBtn.textContent = 'Todas as vagas carregadas';
+            loadMoreBtn.disabled = true;
+            showToast('Mais vagas carregadas');
+        });
+    </script>
+
+</body>
+
+</html>
