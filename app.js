@@ -31,7 +31,7 @@ app.use(session({
 
 // Exemplo de rota inicial para testar
 app.get('/', (req, res) => {
-    res.render('index', { usuario: req.session.usuario || null });
+    res.render('login', { usuario: req.session.usuario || null });
 });
 
 const PORT = process.env.PORT || 3000;

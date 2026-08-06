@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>iBico - Plataforma de Bicos</title>
+</head>
+<body>
+    <div class="card">
+        <h1>🐤 iBico</h1>
+        <p>Bem-vindo ao sistema de bicos!</p>
+        
+        <% if (usuario) { %>
+            <p>Olá, <strong><%= usuario.nome %></strong>!</p>
+        <% } else { %>
+            <p>Servidor e views a funcionar perfeitamente.</p>
+        <% } %>
+
+        <a href="#" class="btn">Entrar / Cadastrar</a>
+    </div>
+</body>
+</html>
