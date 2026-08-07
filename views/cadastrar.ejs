@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro - Ibico</title>
+    <style>
+        body { font-family: sans-serif; padding: 30px; max-width: 400px; margin: 0 auto; }
+        .campo { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 100%; padding: 12px; background: #269992; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Criar Conta de Teste</h2>
+    <form action="/cadastrar" method="POST">
+        <div class="campo">
+            <label>Nome:</label>
+            <input type="text" name="nome" required>
+        </div>
+        <div class="campo">
+            <label>E-mail:</label>
+            <input type="email" name="email" required>
+        </div>
+        <div class="campo">
+            <label>CPF:</label>
+            <input type="text" name="cpf" required>
+        </div>
+        <div class="campo">
+            <label>Idade:</label>
+            <input type="number" name="idade" required>
+        </div>
+        <div class="campo">
+            <label>Perfil:</label>
+            <select name="tipoPerfil" required>
+                <option value="Contratante">Contratante</option>
+                <option value="Trabalhador">Trabalhador</option>
+            </select>
+        </div>
+        <div class="campo">
+            <label>Senha:</label>
+            <input type="password" name="senha" required>
+        </div>
+        <div class="campo">
+            <label>Confirmar Senha:</label>
+            <input type="password" name="confirmarSenha" required>
+        </div>
+        <button type="submit">Cadastrar e Ir para Login</button>
+    </form>
+</body>
+</html>

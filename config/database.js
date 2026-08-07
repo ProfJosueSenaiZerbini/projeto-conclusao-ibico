@@ -1,16 +1,16 @@
 // Conexão com o mariadb
 import mariadb from 'mariadb';
-import doteenv from 'dotenv';
+import dotenv from 'dotenv';
 
 // Carrega as variaveis do ficheiro .env para a memória do node.js
-doteenv.config();
+dotenv.config();
 
 // piscina de conexões(pool);
 const pool = mariadb.createPool({
     host: process.env.DB_HOST,  
     user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    datbase: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     port: process.env.DB_PORT || 3306,
     connectionLimit: 5
 });

@@ -12,3 +12,7 @@ yarn-error.log*
 # Pastas do sistema operacional (opcional)
 .DS_Store
 Thumbs.db
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
