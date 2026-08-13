@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ibico | Histórico de Bicos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="historico.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="navbar__inner">
+            <div class="navbar__logo">Ibico</div>
+            <nav class="navbar__links">
+                <a href="#" class="nav-link">Início</a>
+                <a href="#" class="nav-link">Carteira</a>
+                <a href="#" class="nav-link nav-link--active">Historico</a>
+            </nav>
+            <div class="navbar__actions">
+                <button class="icon-btn" aria-label="Notificações">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                </button>
+                <button class="icon-btn" aria-label="Perfil">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="4" />
+                        <path d="M4 20c0-4 4-7 8-7s8 3 8 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+        <h1 class="page__title">Seu Histórico de Bicos</h1>
+        <p class="page__subtitle">Acompanhe suas candidaturas e serviços confirmados em um só lugar.</p>
+
+        <div class="tabs" role="tablist">
+            <button class="tab tab--active" id="tab-aceitos" role="tab" aria-selected="true" data-target="aceitos">Bicos
+                Aceitos</button>
+            <button class="tab" id="tab-pendentes" role="tab" aria-selected="false" data-target="pendentes">Bicos
+                Pendentes</button>
+        </div>
+
+        <section class="panel-wrapper">
+
+            <div class="panel" id="panel-aceitos" role="tabpanel">
+
+                <article class="card">
+                    <img class="card__avatar" src="https://i.pravatar.cc/80?img=12" alt="Roberto Silva">
+                    <div class="card__body">
+                        <span class="badge badge--confirmado">CONFIRMADO</span>
+                        <h3 class="card__title">Garçom para Evento Corporativo</h3>
+                        <p class="card__meta">Contratante: Roberto Silva • Restaurante Gourmet</p>
+                        <p class="card__schedule">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" />
+                                <path d="M16 2v4M8 2v4M3 10h18" />
+                            </svg>
+                            25 de Outubro
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="clock-icon">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="M12 7v5l3 3" />
+                            </svg>
+                            18:00 - 23:00
+                        </p>
+                    </div>
+                    <div class="card__side">
+                        <span class="card__price-label">VALOR DIÁRIA</span>
+                        <span class="card__price">R$ 180,00</span>
+                        <button class="btn btn--primary">Ver Detalhes</button>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <img class="card__avatar" src="https://i.pravatar.cc/80?img=47" alt="Ana Clara">
+                    <div class="card__body">
+                        <span class="badge badge--andamento">EM ANDAMENTO</span>
+                        <h3 class="card__title">Repositor de Estoque Especialista</h3>
+                        <p class="card__meta">Contratante: Ana Clara • Mercadinho da Vila</p>
+                        <p class="card__schedule">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" />
+                                <path d="M16 2v4M8 2v4M3 10h18" />
+                            </svg>
+                            Hoje
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="clock-icon">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="M12 7v5l3 3" />
+                            </svg>
+                            08:00 - 17:00
+                        </p>
+                    </div>
+                    <div class="card__side">
+                        <span class="card__price-label">VALOR DIÁRIA</span>
+                        <span class="card__price">R$ 120,00</span>
+                        <button class="btn btn--danger">Finalizar Serviço</button>
+                    </div>
+                </article>
+
+            </div>
+
+            <div class="panel panel--hidden" id="panel-pendentes" role="tabpanel">
+
+                <article class="card">
+                    <img class="card__avatar" src="https://i.pravatar.cc/80?img=33" alt="Marcos Lima">
+                    <div class="card__body">
+                        <span class="badge badge--pendente">AGUARDANDO</span>
+                        <h3 class="card__title">Auxiliar de Cozinha para Buffet</h3>
+                        <p class="card__meta">Contratante: Marcos Lima • Buffet Sabor & Arte</p>
+                        <p class="card__schedule">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" />
+                                <path d="M16 2v4M8 2v4M3 10h18" />
+                            </svg>
+                            02 de Novembro
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="clock-icon">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="M12 7v5l3 3" />
+                            </svg>
+                            10:00 - 16:00
+                        </p>
+                    </div>
+                    <div class="card__side">
+                        <span class="card__price-label">VALOR DIÁRIA</span>
+                        <span class="card__price">R$ 95,00</span>
+                        <button class="btn btn--outline">Cancelar Candidatura</button>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <img class="card__avatar" src="https://i.pravatar.cc/80?img=25" alt="Julia Ferreira">
+                    <div class="card__body">
+                        <span class="badge badge--pendente">AGUARDANDO</span>
+                        <h3 class="card__title">Promotor de Vendas em Loja</h3>
+                        <p class="card__meta">Contratante: Julia Ferreira • Loja Ponto Certo</p>
+                        <p class="card__schedule">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" />
+                                <path d="M16 2v4M8 2v4M3 10h18" />
+                            </svg>
+                            05 de Novembro
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="clock-icon">
+                                <circle cx="12" cy="12" r="9" />
+                                <path d="M12 7v5l3 3" />
+                            </svg>
+                            13:00 - 19:00
+                        </p>
+                    </div>
+                    <div class="card__side">
+                        <span class="card__price-label">VALOR DIÁRIA</span>
+                        <span class="card__price">R$ 110,00</span>
+                        <button class="btn btn--outline">Cancelar Candidatura</button>
+                    </div>
+                </article>
+
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer__inner">
+            <div class="footer__brand">Ibico</div>
+            <div class="footer__links">
+                <a href="#">Privacidade</a>
+                <a href="#">Termos</a>
+                <a href="#">Suporte</a>
+                <a href="#">Trabalhe Conosco</a>
+            </div>
+        </div>
+        <div class="footer__copy">© 2024 Ibico. Inspirado na precisão natural.</div>
+    </footer>
+
+    <script src="../public/js/historicoTrabalhador.js"></script>
+</body>
+
+</html>
