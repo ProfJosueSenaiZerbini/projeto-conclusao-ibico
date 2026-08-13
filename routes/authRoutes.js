@@ -1,6 +1,6 @@
 import express from 'express';
 import pool from '../config/database.js';
-import { cadastrarUsuario, logarUsuario } from '../controllers/authController.js';
+import { cadastrarUsuario, logarUsuario, homeContratante } from '../controllers/authController.js';
 
 const router = express.Router();
 
@@ -34,8 +34,7 @@ router.get('/hometrabalhador', async (req, res) => {
     }
 });
 
-
-
+router.get('/homeContratante', homeContratante);
 // Rotas POST que processam os formulários
 router.post('/cadastrar', cadastrarUsuario);
 router.post('/login', logarUsuario);
