@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= bico.titulo %> — Ibico</title>
+  <link rel="stylesheet" href="/css/detalhesBico.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-container">
+      <a href="/homeContratante" class="brand">Ibico</a>
+      <nav>
+        <a href="/homeContratante" class="active">Início</a>
+        <a href="#">Carteira</a>
+        <a href="#">Histórico</a>
+      </nav>
+      <div class="topbar-right">
+        <i class="far fa-bell"></i>
+        <div class="user-avatar"></div>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero-banner">
+    <div class="banner-container">
+      <div class="banner-info">
+        <span class="badge-status">Oportunidade Disponível</span>
+        <h1><%= bico.titulo %></h1>
+        <div class="banner-meta">
+          <span><i class="far fa-clock"></i> Horário: <%= bico.horario %></span>
+          <span><i class="fas fa-shield-alt"></i> Empresa Verificada</span>
+        </div>
+      </div>
+      <div class="banner-price">
+        <span class="price-label">VALOR DA DIÁRIA</span>
+        <h2 class="price-value">R$ <%= Number(bico.valor || 0).toFixed(2) %></h2>
+        <span class="price-sub">Pagamento Imediato via PIX</span>
+      </div>
+    </div>
+  </section>
+
+  <main class="main-container">
+    <div class="left-content">
+      
+      <section class="section-block">
+        <h3>Descrição do Serviço</h3>
+        <p class="description-text"><%= bico.descricao %></p>
+      </section>
+
+      <section class="section-block grid-2">
+        <div class="info-card">
+          <i class="far fa-calendar-alt icon"></i>
+          <div>
+            <span class="card-label">Data do Job</span>
+            <strong><%= bico.data_servico %></strong>
+          </div>
+        </div>
+        <div class="info-card">
+          <i class="far fa-clock icon"></i>
+          <div>
+            <span class="card-label">Horário</span>
+            <strong><%= bico.horario %></strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-block">
+        <h3>Localização</h3>
+        <div class="location-box">
+          <i class="fas fa-map-marker-alt"></i>
+          <div>
+            <strong>Bairro: <%= bico.bairro %></strong>
+            <p>Endereço completo liberado após o aceite.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <aside class="right-sidebar">
+      <div class="summary-card">
+        <h3>Resumo do Bico</h3>
+        
+        <div class="summary-item">
+          <span>Status</span>
+          <strong class="status-badge"><%= bico.status %></strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Contratante</span>
+          <strong><%= bico.contratante_nome || usuario.nome %></strong>
+        </div>
+
+        <% if (usuario.tipo_perfil === 'Trabalhador') { %>
+          <form action="/bicos/<%= bico.id %>/aceitar" method="POST">
+            <button type="submit" class="btn-accept">⚡ Aceitar Bico</button>
+          </form>
+        <% } else { %>
+          <a href="/homeContratante" class="btn-back">Voltar ao Painel</a>
+        <% } %>
+
+        <div class="sidebar-actions">
+          <button class="btn-outline"><i class="fas fa-share-alt"></i> Compartilhar</button>
+          <button class="btn-outline"><i class="fas fa-flag"></i> Denunciar</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+</body>
+</html>

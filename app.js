@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 
 // 1. IMPORTANTE: Importando o seu arquivo de rotas
 import authRoutes from './routes/authRoutes.js'; 
+import bicoRoutes from './routes/bicoRoutes.js';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use(session({
 // 2. CONECTANDO AS SUAS ROTAS:
 // Isso faz o Express ler o authRoutes.js para responder por /login e /cadastrar
 app.use('/', authRoutes);
+app.use('/bicos', bicoRoutes);
 
 // 3. ROTA INICIAL:
 // Se o usuário acessar a raiz (/), nós mandamos ele para a URL /login

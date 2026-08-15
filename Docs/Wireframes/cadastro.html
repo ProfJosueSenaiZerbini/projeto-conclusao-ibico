@@ -1,136 +1,155 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Criar Conta — Ibico</title>
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/cadastro.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Contratante — Ibico</title>
+  <link rel="stylesheet" href="/css/homeContratante.css">
 </head>
 <body>
-<div class="page">
 
-  <div class="auth-split" style="flex:1;">
-    <div class="auth-split-visual">
-      <span class="tag-pill">Oportunidades Locais</span>
-      <h1>Conectando talentos a demandas locais com clareza e agilidade.</h1>
-      <p>Junte-se a milhares de profissionais e contratantes na plataforma de micro-freelas mais confiável do país.</p>
-      <div class="visual-photo">
-        <img src="https://images.unsplash.com/photo-1552728089-57bdde30beb3?q=80&w=600&auto=format&fit=crop" alt="Ilustração de conexão">
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="/homeContratante" class="brand"><span class="brand-dot"></span>Ibico</a>
+      <nav class="topbar-nav">
+        <a href="/homeContratante" class="nav-link active">Início</a>
+        <a href="/bicos" class="nav-link">Vagas</a>
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <div class="saldo-badge">
+        <span class="icon">💳</span>
+        <strong>R$ <%= Number(usuario.saldo_simulado || 0).toFixed(2) %></strong>
+      </div>
+      <div class="user-profile">
+        <span><%= usuario.nome %></span>
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Foto Perfil" class="avatar">
       </div>
     </div>
+  </header>
 
-    <div class="auth-split-form">
-      <div class="auth-box" style="max-width:460px;">
-        <a href="login.html" class="brand teal" style="margin-bottom:18px;"><span class="brand-dot"></span>Ibico</a>
-        <h1 class="auth-title" style="font-size:22px;">Criar Nova Conta</h1>
-        <p class="auth-sub" style="margin-bottom:6px;">Preencha seus dados para começar a usar o Ibico</p>
+  <div class="dashboard-container">
 
-        <label style="margin-top:16px;">Eu quero...</label>
-        <div class="role-toggle" id="cadastroRoleToggle" style="margin-top:0;">
-          <div class="role-card" data-role="trabalhador">
-            <div class="role-icon">🛠️</div>
-            <span>Quero Trabalhar</span>
+    <aside class="sidebar">
+      <a href="/bicos/novo" class="btn btn-primary btn-block btn-publicar" style="text-decoration: none; display: block; text-align: center;">
+        <span class="btn-icon">+</span> Publicar Novo Bico
+      </a>
+
+      <div class="support-card">
+        <h3>Precisa de ajuda?</h3>
+        <p>Nossa central de suporte está disponível 24h.</p>
+        <a href="#" class="hint-link">Acessar Central →</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      
+      <section class="welcome-header">
+        <h1>Olá, <%= usuario.nome %></h1>
+        <p>Veja como estão os seus bicos e candidatos hoje.</p>
+      </section>
+
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-icon">💼</span>
+            <span class="pill pill-green">Atualizado</span>
           </div>
-          <div class="role-card" data-role="contratante">
-            <div class="role-icon">💼</div>
-            <span>Quero Contratar</span>
-          </div>
+          <span class="stat-label">Vagas Criadas</span>
+          <h2 class="stat-value"><%= bicos ? bicos.length : 0 %></h2>
         </div>
 
-        <form id="cadastroForm">
-          <div class="input-row">
-            <div class="field">
-              <label for="nome">Nome Completo</label>
-              <input class="input" id="nome" placeholder="Ex: João da Silva" required>
-            </div>
-            <div class="field">
-              <label for="cEmail">E-mail</label>
-              <input class="input" type="email" id="cEmail" placeholder="seu@email.com" required>
-            </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <span class="stat-icon">👥</span>
+            <span class="pill pill-green">Ativos</span>
           </div>
+          <span class="stat-label">Candidatos</span>
+          <h2 class="stat-value">0</h2>
+        </div>
 
-          <div class="input-row">
-            <div class="field">
-              <label for="telefone">Telefone/WhatsApp</label>
-              <input class="input" id="telefone" placeholder="(00) 00000-0000" required>
-            </div>
-            <div class="field">
-              <label for="cpf">CPF</label>
-              <input class="input" id="cpf" placeholder="000.000.000-00" required>
-            </div>
+        <div class="stat-card stat-card-highlight">
+          <div class="stat-header">
+            <span class="stat-icon">💳</span>
           </div>
+          <span class="stat-label">Saldo Disponível</span>
+          <h2 class="stat-value">R$ <%= Number(usuario.saldo_simulado || 0).toFixed(2) %></h2>
+        </div>
+      </section>
 
-          <div class="input-row">
-            <div class="field">
-              <label for="cSenha">Senha</label>
-              <div class="input-with-icon">
-                <input class="input" type="password" id="cSenha" placeholder="••••••••" required>
-                <button type="button" class="input-icon-btn" data-toggle-password="cSenha" aria-label="Mostrar senha">👁️</button>
+      <section class="vagas-section">
+        <div class="section-header">
+          <h2>Vagas Ativas</h2>
+          <a href="/bicos" class="hint-link">Ver todas as vagas →</a>
+        </div>
+
+        <div class="vagas-list">
+          
+          <% if (bicos && bicos.length > 0) { %>
+            <% bicos.forEach(bico => { %>
+              
+              <div class="vaga-card">
+                <div class="vaga-info">
+                  <div class="vaga-badges">
+                    <% if (bico.status === 'Aberto') { %>
+                      <span class="badge badge-open">ABERTO</span>
+                    <% } else if (bico.status === 'Em andamento') { %>
+                      <span class="badge badge-filled">EM ANDAMENTO</span>
+                    <% } else { %>
+                      <span class="badge badge-default"><%= bico.status.toUpperCase() %></span>
+                    <% } %>
+                    
+                    <span class="vaga-date">📍 <%= bico.bairro %> • R$ <%= Number(bico.valor || 0).toFixed(2) %></span>
+                  </div>
+                  
+                  <h3 class="vaga-title"><%= bico.titulo %></h3>
+                  <p class="vaga-location"><%= bico.descricao %></p>
+                </div>
+
+                <div class="vaga-actions">
+                  <a href="/bicos/<%= bico.id %>" class="btn btn-teal">Gerenciar Vaga</a>
+                </div>
               </div>
+
+            <% }); %>
+          <% } else { %>
+            <div class="empty-state" style="text-align: center; padding: 32px; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <p style="color: #64748b; margin: 0;">Você ainda não possui nenhum bico publicado.</p>
+              <a href="/bicos/novo" class="btn btn-teal" style="display: inline-block; margin-top: 12px; text-decoration: none;">Publicar Meu Primeiro Bico</a>
             </div>
-            <div class="field">
-              <label for="cConfirma">Confirmar Senha</label>
-              <div class="input-with-icon">
-                <input class="input" type="password" id="cConfirma" placeholder="••••••••" required>
-                <button type="button" class="input-icon-btn" data-toggle-password="cConfirma" aria-label="Mostrar senha">👁️</button>
-              </div>
-            </div>
-          </div>
+          <% } %>
 
-          <div class="checkbox-row" style="margin-bottom:8px;">
-            <input type="checkbox" id="termos" required>
-            <label for="termos" style="margin:0;font-weight:500;">Li e aceito os <a href="#" class="hint-link">Termos de Uso</a> e a <a href="#" class="hint-link">Política de Privacidade</a>.</label>
-          </div>
-          <div class="checkbox-row" style="margin-bottom:20px;">
-            <input type="checkbox" id="idade" required>
-            <label for="idade" style="margin:0;font-weight:500;">Confirmo que possuo 18 anos ou mais. (Obrigatório para prestadores de serviço).</label>
-          </div>
+        </div>
+      </section>
 
-          <button type="submit" class="btn btn-teal btn-block">Finalizar Cadastro</button>
-        </form>
+    </main>
+  </div>
 
-        <p class="foot-note">Já possui uma conta? <a href="login.html" class="hint-link">Faça o login</a></p>
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span class="brand-text">Ibico</span>
+        <p>© 2026 Ibico - Intermediação de Micro-freelances. Todos os direitos reservados.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Plataforma</h4>
+          <a href="#">Sobre Nós</a>
+          <a href="#">Vagas</a>
+        </div>
+        <div class="footer-col">
+          <h4>Suporte</h4>
+          <a href="#">Ajuda</a>
+          <a href="#">Contato</a>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <a href="#">Termos de Uso</a>
+          <a href="#">Privacidade</a>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+  </footer>
 
-<script src="js/app.js"></script>
-<script>
-  initRoleToggle('#cadastroRoleToggle');
-  initAuthRedirect('cadastroForm');
-</script>
 </body>
 </html>
-
-
-
-CSS
-
-
-/* =========================================================
-   Cadastro — Ibico
-   ========================================================= */
-.auth-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  min-height: 100vh;
-}
-.auth-split-visual {
-  background: linear-gradient(160deg, #eafaf6 0%, #e0f4fb 100%);
-  padding: 60px 48px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.auth-split-visual h1 { font-size: 30px; max-width: 460px; }
-.auth-split-visual p { color: var(--ink-500); max-width: 440px; }
-.tag-pill { display: inline-block; align-self: flex-start; background: var(--brand-100); color: var(--brand-700); font-weight: 700; font-size: 12.5px; padding: 6px 14px; border-radius: 999px; margin-bottom: 18px; }
-.visual-photo { margin-top: 28px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); border: 4px solid #fff; }
-.visual-photo img { width: 100%; display: block; }
-.auth-split-form { display: flex; align-items: center; justify-content: center; padding: 40px 24px; background: var(--surface); }
-.auth-title { font-size: 22px; }
-.auth-sub { color: var(--ink-500); margin-bottom: 6px; }
-.foot-note { font-size: 13px; color: var(--ink-500); margin-top: 16px; text-align: center; }
-

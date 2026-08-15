@@ -2,21 +2,23 @@
 
 - Scripts de criação do banco de dados e tabelas com extesnão .sql
 
-CREATE DATABASE Ibico;
-USE Ibico;
+CREATE DATABASE ibico_db;
+USE ibico_db;
 
 -- Tabela de Usuários
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    idade INT NOT NULL,
     senha VARCHAR(255) NOT NULL,
-    tipo ENUM('Contratante', 'Trabalhador') NOT NULL,
-    dat_nasc DATE NOT NULL,
-    saldo_simulado DECIMAL(10, 2) DEFAULT 0.00
+    tipo_perfil VARCHAR(50) NOT NULL,
+    saldo_simulado DECIMAL(10, 2) DEFAULT 0.00,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de Bicos (Vagas)
+-- Tabela de Bicos
 CREATE TABLE bicos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     contratante_id INT NOT NULL,

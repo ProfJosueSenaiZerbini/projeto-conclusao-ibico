@@ -148,3 +148,14 @@ export const homeContratante = async (req, res) => {
         return res.status(500).send('Erro interno ao carregar a página.');
     }
 };
+
+export const exibirFormularioPublicar = (req, res) => {
+    // Verifica se o usuário está logado
+    if (!req.session.usuario) {
+        return res.redirect('/login');
+    }
+    
+    res.render('publicarBico', { 
+        usuario: req.session.usuario 
+    });
+};
