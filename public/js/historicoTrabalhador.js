@@ -1,32 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
   const tabs = document.querySelectorAll('.tab');
-  const panels = {
-    aceitos: document.getElementById('panel-aceitos'),
-    pendentes: document.getElementById('panel-pendentes'),
-  };
-
-  function activate(target) {
-    tabs.forEach(tab => {
-      const isActive = tab.dataset.target === target;
-      tab.classList.toggle('tab--active', isActive);
-      tab.setAttribute('aria-selected', isActive);
-    });
-
-    Object.entries(panels).forEach(([key, panel]) => {
-      if (key === target) {
-        panel.classList.remove('panel--hidden');
-        // reinicia a animação de entrada toda vez que a aba é trocada
-        panel.style.animation = 'none';
-        // force reflow para o navegador "esquecer" a animação anterior
-        void panel.offsetWidth;
-        panel.style.animation = '';
-      } else {
-        panel.classList.add('panel--hidden');
-      }
-    });
-  }
+  const panels = document.querySelectorAll('.panel');
 
   tabs.forEach(tab => {
-    tab.addEventListener('click', () => activate(tab.dataset.target));
+    tab.addEventListener('click', () => {
+      const targetId = tab.getAttribute('data-target');
+
+      // Atualiza estado visual das abas
+      tabs.forEach(t => {
+        t.classList.remove('tab--active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('tab--active');
+      tab.setAttribute('aria-selected', 'true');
+
+      // Esconde todos os painéis e exibe apenas o selecionado
+      panels.forEach(panel => {
+        if (panel.id === `panel-${targetId}`) {
+          panel.classList.remove('panel--hidden');
+        } else {
+          panel.classList.add('panel--hidden');
+        }
+      });
+    });
   });
 });

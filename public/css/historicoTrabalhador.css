@@ -1,40 +1,15 @@
-:root {
-  --bg: #FAF9F6;
-  --white: #FFFFFF;
-  --ink: #14213D;
-  --ink-soft: #4B5563;
-  --muted: #6B7280;
-  --line: #E7E5E0;
-  --brand-red: #E8503A;
-  --brand-green: #12372A;
-  --brand-green-hover: #0C2A20;
-  --confirmado-bg: #E7F6EC;
-  --confirmado-fg: #1E8E4F;
-  --andamento-bg: #E9EEFC;
-  --andamento-fg: #3959D9;
-  --pendente-bg: #FFF3D6;
-  --pendente-fg: #B4750C;
-  --shadow: 0 1px 2px rgba(20, 33, 61, 0.04), 0 8px 20px rgba(20, 33, 61, 0.05);
-  --radius-lg: 16px;
-  --radius-md: 10px;
-  --radius-full: 999px;
-}
+/* =========================================================
+   IBICO — Histórico do Trabalhador (historicoTrabalhador.css)
+   ========================================================= */
 
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--bg);
-  color: var(--ink);
-  -webkit-font-smoothing: antialiased;
-}
-
-/* NAVBAR */
+/* =========================================================
+   HEADER / NAVBAR (PARTIAL PADRÃO)
+   ========================================================= */
 
 .navbar {
-  background: var(--bg);
-  border-bottom: 1px solid var(--line);
+  background: var(--bg, #FAF9F6);
+  border-bottom: 1px solid var(--line, #E7E5E0);
+  width: 100%;
 }
 
 .navbar__inner {
@@ -49,7 +24,7 @@ body {
 .navbar__logo {
   font-size: 1.4rem;
   font-weight: 800;
-  color: var(--brand-red);
+  color: var(--brand-red, #E8503A);
   letter-spacing: -0.02em;
 }
 
@@ -60,7 +35,7 @@ body {
 
 .nav-link {
   text-decoration: none;
-  color: var(--ink-soft);
+  color: var(--ink-soft, #4B5563);
   font-weight: 500;
   font-size: 0.95rem;
   padding-bottom: 6px;
@@ -69,13 +44,13 @@ body {
 }
 
 .nav-link:hover {
-  color: var(--ink);
+  color: var(--ink, #14213D);
 }
 
 .nav-link--active {
-  color: var(--brand-red);
+  color: var(--brand-red, #E8503A);
   font-weight: 600;
-  border-bottom-color: var(--brand-red);
+  border-bottom-color: var(--brand-red, #E8503A);
 }
 
 .navbar__actions {
@@ -87,14 +62,14 @@ body {
 .icon-btn {
   background: none;
   border: none;
-  color: var(--ink);
+  color: var(--ink, #14213D);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: var(--radius-full);
+  border-radius: 999px;
   transition: background 0.2s ease;
 }
 
@@ -102,8 +77,8 @@ body {
   background: rgba(20, 33, 61, 0.06);
 }
 
-/* PAGE */
 
+/* PAGE STRUCTURE */
 .page {
   max-width: 1200px;
   margin: 0 auto;
@@ -115,20 +90,20 @@ body {
   font-weight: 800;
   margin: 0 0 10px;
   letter-spacing: -0.01em;
+  color: var(--ink, #14213D);
 }
 
 .page__subtitle {
-  color: var(--muted);
+  color: var(--muted, #6B7280);
   font-size: 1.02rem;
   margin: 0 0 28px;
 }
 
-/* TABS */
-
+/* TABS (Bicos Aceitos / Bicos Pendentes) */
 .tabs {
   display: inline-flex;
   background: #EFEDE8;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, 10px);
   padding: 4px;
   gap: 4px;
   margin-bottom: 28px;
@@ -137,7 +112,7 @@ body {
 .tab {
   border: none;
   background: transparent;
-  color: var(--ink-soft);
+  color: var(--ink-soft, #4B5563);
   font-family: inherit;
   font-size: 0.92rem;
   font-weight: 600;
@@ -148,18 +123,17 @@ body {
 }
 
 .tab:hover:not(.tab--active) {
-  color: var(--ink);
+  color: var(--ink, #14213D);
   background: rgba(20, 33, 61, 0.05);
 }
 
 .tab--active {
-  background: var(--brand-green);
-  color: #fff;
+  background: var(--brand-red,  #E8503A);
+  color: #ffffff;
   box-shadow: 0 2px 6px rgba(18, 55, 42, 0.25);
 }
 
-/* PANELS + TRANSITION */
-
+/* PANELS & ANIMATIONS */
 .panel-wrapper {
   position: relative;
 }
@@ -186,13 +160,12 @@ body {
   }
 }
 
-/* CARD */
-
+/* CARDS */
 .card {
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+  background: var(--white, #FFFFFF);
+  border: 1px solid var(--line, #E7E5E0);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: var(--shadow, 0 1px 2px rgba(20, 33, 61, 0.04), 0 8px 20px rgba(20, 33, 61, 0.05));
   padding: 24px 28px;
   display: flex;
   align-items: center;
@@ -208,7 +181,7 @@ body {
 .card__avatar {
   width: 52px;
   height: 52px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-full, 999px);
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -218,40 +191,42 @@ body {
   min-width: 0;
 }
 
+/* BADGES DE STATUS */
 .badge {
   display: inline-block;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 4px 10px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-full, 999px);
   margin-bottom: 8px;
 }
 
 .badge--confirmado {
-  background: var(--confirmado-bg);
-  color: var(--confirmado-fg);
+  background: var(--confirmado-bg, #E7F6EC);
+  color: var(--confirmado-fg, #1E8E4F);
 }
 
 .badge--andamento {
-  background: var(--andamento-bg);
-  color: var(--andamento-fg);
+  background: var(--andamento-bg, #E9EEFC);
+  color: var(--andamento-fg, #3959D9);
 }
 
 .badge--pendente {
-  background: var(--pendente-bg);
-  color: var(--pendente-fg);
+  background: var(--pendente-bg, #FFF3D6);
+  color: var(--pendente-fg, #B4750C);
 }
 
+/* CARD DETAILS */
 .card__title {
   font-size: 1.15rem;
   font-weight: 700;
   margin: 0 0 6px;
-  color: var(--ink);
+  color: var(--ink, #14213D);
 }
 
 .card__meta {
-  color: var(--ink-soft);
+  color: var(--ink-soft, #4B5563);
   font-size: 0.92rem;
   margin: 0 0 8px;
 }
@@ -260,7 +235,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--muted);
+  color: var(--muted, #6B7280);
   font-size: 0.88rem;
   margin: 0;
 }
@@ -269,6 +244,7 @@ body {
   margin-left: 10px;
 }
 
+/* CARD SIDE & BUTTONS */
 .card__side {
   display: flex;
   flex-direction: column;
@@ -281,24 +257,22 @@ body {
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.05em;
-  color: var(--muted);
+  color: var(--muted, #6B7280);
 }
 
 .card__price {
   font-size: 1.3rem;
   font-weight: 800;
-  color: var(--brand-red);
+  color: var(--brand-red, #E8503A);
   margin-bottom: 8px;
 }
-
-/* BUTTONS */
 
 .btn {
   font-family: inherit;
   font-size: 0.88rem;
   font-weight: 600;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-md, 10px);
   padding: 10px 18px;
   cursor: pointer;
   white-space: nowrap;
@@ -306,24 +280,19 @@ body {
 }
 
 .btn--primary {
-  background: var(--brand-green);
-  color: #fff;
+  background: var(--brand-green, #12372A);
+  color: #ffffff;
 }
 
 .btn--primary:hover {
-  background: var(--brand-green-hover);
+  background: var(--brand-green-hover, #0C2A20);
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(18, 55, 42, 0.3);
 }
 
-.btn--primary:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
 .btn--danger {
-  background: var(--brand-red);
-  color: #fff;
+  background: var(--brand-red, #E8503A);
+  color: #ffffff;
 }
 
 .btn--danger:hover {
@@ -332,74 +301,38 @@ body {
   box-shadow: 0 6px 14px rgba(232, 80, 58, 0.35);
 }
 
-.btn--danger:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
 .btn--outline {
   background: transparent;
-  color: var(--ink-soft);
-  border: 1px solid var(--line);
+  color: var(--ink-soft, #4B5563);
+  border: 1px solid var(--line, #E7E5E0);
 }
 
 .btn--outline:hover {
-  border-color: var(--brand-red);
-  color: var(--brand-red);
+  border-color: var(--brand-red, #E8503A);
+  color: var(--brand-red, #E8503A);
   background: rgba(232, 80, 58, 0.05);
 }
 
-/* FOOTER */
-
-.footer {
-  background: #E9E7E2;
-  margin-top: 60px;
-  padding: 40px 32px 24px;
-}
-
-.footer__inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.footer__brand {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: var(--ink);
-}
-
-.footer__links {
-  display: flex;
-  gap: 28px;
-}
-
-.footer__links a {
-  color: var(--ink-soft);
-  text-decoration: none;
-  font-size: 0.92rem;
-  transition: color 0.2s ease;
-}
-
-.footer__links a:hover {
-  color: var(--brand-red);
-}
-
-.footer__copy {
-  max-width: 1200px;
-  margin: 0 auto;
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-
-/* RESPONSIVE */
-
+/* RESPONSIVO */
 @media (max-width: 720px) {
-  .navbar__links { display: none; }
-  .card { flex-wrap: wrap; }
-  .card__side { align-items: flex-start; width: 100%; }
-  .footer__inner { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .page {
+    padding: 24px 16px 32px;
+  }
+
+  .card {
+    flex-wrap: wrap;
+    padding: 18px 20px;
+  }
+
+  .card__side {
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line, #E7E5E0);
+  }
+
+  .btn {
+    width: 100%;
+  }
 }

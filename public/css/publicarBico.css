@@ -13,25 +13,6 @@ body {
   color: var(--ink);
 }
 
-.topbar {
-  background: #fff;
-  border-bottom: 1px solid var(--border);
-  padding: 15px 0;
-}
-
-.topbar-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.brand { color: var(--teal); font-weight: bold; text-decoration: none; font-size: 20px; }
-
-nav a { text-decoration: none; color: #64748b; margin-left: 20px; font-size: 14px; }
-nav a.active { color: var(--teal); font-weight: 600; }
-
 .content { max-width: 800px; margin: 40px auto; padding: 0 20px; }
 
 .form-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
@@ -122,6 +103,3 @@ input, textarea {
 .info-card h4 { margin: 0; font-size: 13px; }
 .info-card p { margin: 2px 0 0; font-size: 12px; color: #64748b; }
 
-.main-footer { margin-top: 80px; padding: 20px 0; border-top: 1px solid var(--border); font-size: 12px; color: #64748b; }
-.footer-container { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; }
-.main-footer nav a { margin-left: 15px; color: #64748b; }

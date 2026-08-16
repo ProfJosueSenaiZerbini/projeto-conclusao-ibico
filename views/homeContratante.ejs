@@ -4,30 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home Contratante — Ibico</title>
+  <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/homeContratante.css">
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="topbar-left">
-      <a href="/homeContratante" class="brand"><span class="brand-dot"></span>Ibico</a>
-      <nav class="topbar-nav">
-        <a href="/homeContratante" class="nav-link active">Início</a>
-        <a href="/bicos" class="nav-link">Vagas</a>
-      </nav>
-    </div>
-    <div class="topbar-right">
-      <div class="saldo-badge">
-        <span class="icon">💳</span>
-        <strong>R$ <%= Number(usuario.saldo_simulado || 0).toFixed(2) %></strong>
-      </div>
-      <div class="user-profile">
-        <span><%= usuario.nome %></span>
-        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Foto Perfil" class="avatar">
-      </div>
-    </div>
-  </header>
-
+  <%- include('partials/headerContratante') %>
   <div class="dashboard-container">
 
     <aside class="sidebar">
@@ -107,7 +89,7 @@
                 </div>
 
                 <div class="vaga-actions">
-                  <a href="/bicos/<%= bico.id %>" class="btn btn-teal">Gerenciar Vaga</a>
+                  <a href="#" class="btn btn-teal">Gerenciar Vaga</a>
                 </div>
               </div>
 
@@ -124,32 +106,8 @@
 
     </main>
   </div>
-
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-brand">
-        <span class="brand-text">Ibico</span>
-        <p>© 2026 Ibico - Intermediação de Micro-freelances. Todos os direitos reservados.</p>
-      </div>
-      <div class="footer-links">
-        <div class="footer-col">
-          <h4>Plataforma</h4>
-          <a href="#">Sobre Nós</a>
-          <a href="#">Vagas</a>
-        </div>
-        <div class="footer-col">
-          <h4>Suporte</h4>
-          <a href="#">Ajuda</a>
-          <a href="#">Contato</a>
-        </div>
-        <div class="footer-col">
-          <h4>Legal</h4>
-          <a href="#">Termos de Uso</a>
-          <a href="#">Privacidade</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+  
+<%- include('partials/footer') %>
 
 </body>
 </html>

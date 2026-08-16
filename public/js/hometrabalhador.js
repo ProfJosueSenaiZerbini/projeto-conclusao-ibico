@@ -24,11 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Navegação
     document.querySelectorAll('nav a').forEach(link => {
-        link.addEventListener('click', e => {
-            e.preventDefault();
+        link.addEventListener('click', () => {
             document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
             link.classList.add('active');
-            showToast(`Navegando para "${link.textContent}"`);
         });
     });
 
