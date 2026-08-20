@@ -79,7 +79,8 @@ export const logarUsuario = async (req, res) => {
         req.session.usuario = {
             id: usuario.id,
             nome: usuario.nome,
-            tipo_perfil: usuario.tipo_perfil
+            tipo_perfil: usuario.tipo_perfil,
+            saldo_simulado: usuario.saldo_simulado
         };
 
         console.log(`✅ Login realizado! Usuário: ${usuario.nome} | Perfil: ${usuario.tipo_perfil}`);

@@ -1,4 +1,4 @@
-import pool from '../config/database.js';
+import db from '../config/database.js';
 
 export const exibirFormularioPublicar = (req, res) => {
     if (!req.session?.usuario) {
@@ -72,3 +72,33 @@ export const exibirDetalhesBico = async (req, res) => {
     }
 };
 
+export const exibirBicosAtivosContratante = async (req, res) => {
+  try {
+    const usuarioId = req.session.usuario ? req.session.usuario.id : 1;
+
+    // Busca bicos do contratante logado (Aberto ou Em andamento)
+    const bicosAtivos = await db.query(
+      `SELECT 
+        b.id,
+        b.titulo,
+        b.descricao,
+        b.valor,
+        DATE_FORMAT(b.data_servico, '%d/%m/%Y') AS data_servico_formatada,
+        b.horario,
+        b.bairro,
+        b.status,
+        u.nome AS nome_trabalhador
+       FROM bicos b
+       LEFT JOIN usuarios u ON b.trabalhador_id = u.id
+       WHERE b.contratante_id = ? 
+         AND b.status IN ('Aberto', 'Em andamento')
+       ORDER BY b.data_servico ASC`,
+      [usuarioId]
+    );
+
+    res.render('bicosAtivos', { bicos: bicosAtivos });
+  } catch (error) {
+    console.error('🚫 Erro ao buscar bicos ativos:', error);
+    res.status(500).send('Erro ao carregar os bicos ativos.');
+  }
+};

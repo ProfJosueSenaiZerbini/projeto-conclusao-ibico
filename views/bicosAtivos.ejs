@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iBico - Meus Bicos Ativos</title>
+   <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/bicosAtivos.css">
+</head>
+<body>
+
+  <%- include('partials/headerContratante') %>
+
+  <main class="container">
+    <h2>Meus Bicos Ativos</h2>
+
+    <% if (bicos.length === 0) { %>
+      <div class="card-empty">
+        <p>Você não possui nenhum bico aberto ou em andamento no momento.</p>
+        <a href="/bicos/novo" class="btn btn-primary">Publicar novo bico</a>
+      </div>
+    <% } else { %>
+      <div class="cards-grid">
+        <% bicos.forEach(bico => { %>
+          <div class="card-bico">
+            <div class="card-header">
+              <h3><%= bico.titulo %></h3>
+              <span class="badge badge-<%= bico.status === 'Aberto' ? 'aberto' : 'andamento' %>">
+              <p><strong>Data:</strong> <%= bico.data_servico_formatada || bico.data_servico %> - <%= bico.horario %></p>
+              </span>
+            </div>
+
+            <p class="descricao"><%= bico.descricao %></p>
+
+            <div class="detalhes">
+              <p><strong>Valor:</strong> R$ <%= Number(bico.valor).toFixed(2) %></p>
+              <p><strong>Data:</strong> <%= bico.data_servico_formatada %> - <%= bico.horario %></p>
+              <p><strong>Bairro:</strong> <%= bico.bairro %></p>
+              
+              <% if (bico.nome_trabalhador) { %>
+                <p><strong>Trabalhador:</strong> <%= bico.nome_trabalhador %></p>
+              <% } else { %>
+                <p><em>Aguardando um trabalhador aceitar</em></p>
+              <% } %>
+            </div>
+
+            <div class="card-actions">
+              <a href="/bicos/<%= bico.id %>" class="btn btn-secondary">Ver detalhes</a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+
+   <%- include('partials/footer') %>
+</body>
+</html>

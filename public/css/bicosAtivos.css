@@ -1,0 +1,141 @@
+/* Layout Principal */
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+/* Grid de Cards */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card do Bico */
+.card-bico {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-bico:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Cabeçalho do Card */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #1a252f;
+}
+
+/* Badges de Status */
+.badge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.badge-aberto {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.badge-andamento {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+/* Conteúdo */
+.descricao {
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+.detalhes p {
+  margin: 0.4rem 0;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+/* Ações */
+.card-actions {
+  margin-top: 1.2rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Botões */
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary {
+  background-color: #2e7d32;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #1b5e20;
+}
+
+.btn-secondary {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn-secondary:hover {
+  background-color: #e0e0e0;
+}
+
+/* Estado Vazio */
+.card-empty {
+  text-align: center;
+  background-color: #f9f9f9;
+  padding: 3rem 1.5rem;
+  border-radius: 10px;
+  border: 2px dashed #ccc;
+}
+
+.card-empty p {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
