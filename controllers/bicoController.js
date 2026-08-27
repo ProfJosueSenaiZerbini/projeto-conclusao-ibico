@@ -24,7 +24,7 @@ export const cadastrarBico = async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?, ?, 'Aberto')
         `;
 
-        await pool.query(query, [
+        await db.query(query, [
             contratante_id,
             titulo,
             descricao,
