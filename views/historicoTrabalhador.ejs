@@ -15,29 +15,77 @@
 
    <%- include('partials/headerTrabalhador') %>
 
-    <main class="page">
-        <h1 class="page__title">Seu Histórico de Bicos</h1>
-        <p class="page__subtitle">Acompanhe suas candidaturas e serviços confirmados em um só lugar.</p>
+   <main class="page">
+    <h1 class="page__title">Seu Histórico de Bicos</h1>
+    <p class="page__subtitle">Acompanhe suas candidaturas e serviços confirmados em um só lugar.</p>
 
-        <div class="tabs" role="tablist">
-            <button class="tab tab--active" id="tab-aceitos" role="tab" aria-selected="true" data-target="aceitos">Bicos
-                Aceitos</button>
-            <button class="tab" id="tab-pendentes" role="tab" aria-selected="false" data-target="pendentes">Bicos
-                Pendentes</button>
+    <!-- Botões das Abas -->
+    <div class="tabs" role="tablist">
+        <button class="tab tab--active" onclick="trocarAba(event, 'aceitos')">Bicos Aceitos</button>
+        <button class="tab" onclick="trocarAba(event, 'pendentes')">Bicos Pendentes</button>
+    </div>
+
+    <div class="tab-content">
+        <!-- Conteúdo: Bicos Aceitos -->
+        <div class="tab-panel tab-panel--active" id="aceitos">
+            <ul class="bicos-list">
+                <li class="bico-card">
+                    <div class="bico-card__header">
+                        <h3>Pintura de Parede da Sala</h3>
+                        <span class="badge badge--success">Em Andamento</span>
+                    </div>
+                    <p class="bico-card__desc">Pintura simples com tinta acrílica em sala de 20m².</p>
+                    <div class="bico-card__footer">
+                        <span><strong>Valor:</strong> R$ 150,00</span>
+                        <span><strong>Data:</strong> 05/09/2026</span>
+                    </div>
+                </li>
+
+                <li class="bico-card">
+                    <div class="bico-card__header">
+                        <h3>Montagem de Guarda-Roupa</h3>
+                        <span class="badge badge--success">Concluído</span>
+                    </div>
+                    <p class="bico-card__desc">Montagem de guarda-roupa de 6 portas com gaveteiro.</p>
+                    <div class="bico-card__footer">
+                        <span><strong>Valor:</strong> R$ 200,00</span>
+                        <span><strong>Data:</strong> 20/08/2026</span>
+                    </div>
+                </li>
+            </ul>
         </div>
 
-        <div class="tab-content">
-            <div class="tab-panel tab-panel--active" id="aceitos" role="tabpanel" aria-labelledby="tab-aceitos">
-                <ul class="bicos-list" id="bicosAceitosList">
-                    <!-- Bicos aceitos serão carregados aqui via JS -->
-                </ul>
-            </div>
-            <div class="tab-panel" id="pendentes" role="tabpanel" aria-labelledby="tab-pendentes">
-                <ul class="bicos-list" id="bicosPendentesList">
-                    <!-- Bicos pendentes serão carregados aqui via JS -->
-                </ul>
-            </div>
-    </main>
+        <!-- Conteúdo: Bicos Pendentes -->
+        <div class="tab-panel" id="pendentes" style="display: none;">
+            <ul class="bicos-list">
+                <li class="bico-card">
+                    <div class="bico-card__header">
+                        <h3>Jardinagem e Poda de Grama</h3>
+                        <span class="badge badge--warning">Pendente</span>
+                    </div>
+                    <p class="bico-card__desc">Corte de grama e recolhimento de folhas em quintal pequeno.</p>
+                    <div class="bico-card__footer">
+                        <span><strong>Valor:</strong> R$ 90,00</span>
+                        <span><strong>Data:</strong> 12/09/2026</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</main>
+
+<script>
+    function trocarAba(event, tabId) {
+        // Esconde todos os painéis
+        document.querySelectorAll('.tab-panel').forEach(panel => panel.style.display = 'none');
+        // Remove a classe ativa dos botões
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('tab--active'));
+        
+        // Mostra o painel selecionado e ativa o botão
+        document.getElementById(tabId).style.display = 'block';
+        event.currentTarget.classList.add('tab--active');
+    }
+</script>
 
    <%- include('partials/footer') %>
 

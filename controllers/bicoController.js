@@ -53,7 +53,7 @@ export const exibirDetalhesBico = async (req, res) => {
             WHERE b.id = ?
         `;
 
-        const resultado = await pool.query(query, [id]);
+        const resultado = await db.query(query, [id]);
         const bicos = Array.isArray(resultado?.[0]) ? resultado[0] : resultado;
         const bicoEncontrado = bicos[0];
 

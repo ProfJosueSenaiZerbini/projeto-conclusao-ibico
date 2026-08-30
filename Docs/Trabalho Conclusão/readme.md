@@ -1,5 +1,3 @@
 ## Acrescentar nesta pasta
 
-- O trabalho de conclusão de curso
-
-https://www.figma.com/design/waKrjHGIbhB7ktG5TgChbk/Ibico?node-id=0-1&p=f&t=Kqi8PgDZf1mtYPtG-0
+- 📄 [Trabalho de Conclusão de Curso (TCC)](https://docs.google.com/document/d/1hxiNtMAYtUJ1KnvMxwBpyzFcB0BRmEcmt3RTsE_2eC4/edit?usp=sharing)
