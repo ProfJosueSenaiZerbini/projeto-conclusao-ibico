@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fieldsTrabalhador.style.display = 'block';
 
     // Opcional: Atualizar a imagem lateral temporária para o trabalhador
-    visualImage.src = 'https://placehold.co/600x400/0284c7/ffffff?text=Imagem+Trabalhador';
+    visualImage.src = 'https://s2-g1.glbimg.com/4GbQBWVUJfunH7obkbycC1-BAPk=/0x0:1233x815/600x0/smart/filters:gifv():strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2021/V/M/4RwaQ1SPewxbgBM4uAgA/rudimar.jpg';
   }
 
   // Função para alternar para a view de Contratante
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fieldsTrabalhador.style.display = 'none';
 
     // Voltar imagem temporária do contratante
-    visualImage.src = 'https://placehold.co/600x400/16a34a/ffffff?text=Imagem+Contratante';
+    visualImage.src = 'https://www.coisasdaroca.com/wp-content/uploads/2017/05/v-27-e1496090254861.jpg';
   }
 
   cardContratante.addEventListener('click', ativarModoContratante);
