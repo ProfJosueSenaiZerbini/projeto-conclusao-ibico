@@ -53,29 +53,35 @@ export const cadastrarUsuario = async (req, res) => {
 };
 
 export const logarUsuario = async (req, res) => {
-    const { email, senha, tipoPerfil } = req.body;
-
+    const emailLimpo = req.body.email ? req.body.email.trim() : '';
+    const { senha, tipoPerfil } = req.body;
+console.log('Dados recebidos no req.body:', req.body);
     try {
+        // No driver 'mariadb', a query retorna diretamente a lista de resultados
         const usuarios = await pool.query(
-            'SELECT id, nome, senha, tipo_perfil FROM usuarios WHERE email = ?',
-            [email]
+            'SELECT id, nome, senha, tipo_perfil, saldo_simulado FROM usuarios WHERE email = ?',
+            [emailLimpo]
         );
 
+        // Se o array estiver vazio, o e-mail não existe no banco
         if (usuarios.length === 0) {
             return res.status(401).send('E-mail não cadastrado!');
         }
 
         const usuario = usuarios[0];
 
+        // Validação da senha com bcrypt
         const senhaValida = await bcrypt.compare(senha, usuario.senha);
         if (!senhaValida) {
             return res.status(401).send('Senha incorreta!');
         }
 
+        // Validação do perfil de acesso (Contratante ou Trabalhador)
         if (tipoPerfil && usuario.tipo_perfil.toLowerCase() !== tipoPerfil.toLowerCase()) {
             return res.status(403).send(`Sua conta está cadastrada como ${usuario.tipo_perfil}. Alterne a opção para continuar.`);
         }
 
+        // Gravando os dados do usuário na sessão
         req.session.usuario = {
             id: usuario.id,
             nome: usuario.nome,

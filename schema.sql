@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS ibico_db;
-USE ibico_db;
+CREATE DATABASE IF NOT EXISTS db_bico;
+USE db_bico;
 
 -- Tabela de Usuários
 CREATE TABLE IF NOT EXISTS usuarios (
