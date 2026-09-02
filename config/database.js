@@ -1,6 +1,7 @@
 // Conexão com o mariadb
 import mariadb from 'mariadb';
 import dotenv from 'dotenv';
+import mysql from 'mysql2/promise';
 
 // Carrega as variaveis do ficheiro .env para a memória do node.js
 dotenv.config();

@@ -1,58 +1,51 @@
-// Espera o documento carregar completamente
 document.addEventListener('DOMContentLoaded', () => {
+  const cardContratante = document.getElementById('cardContratante');
+  const cardTrabalhador = document.getElementById('cardTrabalhador');
+  const fieldsContratante = document.getElementById('fieldsContratante');
+  const fieldsTrabalhador = document.getElementById('fieldsTrabalhador');
+  const tipoPerfilInput = document.getElementById('tipoPerfilInput');
+  const visualImage = document.getElementById('visualImage');
 
-    // 1. Alternar entre "Quero Contratar" e "Quero Trabalhar"
-    window.selecionarPerfil = function(perfil) {
-        const cardContratar = document.querySelector('[data-role="contratante"]');
-        const cardTrabalhar = document.querySelector('[data-role="trabalhador"]');
-        const inputPerfil = document.getElementById('tipoPerfilInput');
+  // Função para alternar para a view de Trabalhador
+  function ativarModoTrabalhador() {
+    cardContratante.classList.remove('active');
+    cardTrabalhador.classList.add('active');
+    
+    document.body.classList.add('theme-trabalhador');
+    tipoPerfilInput.value = 'Trabalhador';
 
-        if (cardContratar && cardTrabalhar) {
-            cardContratar.classList.remove('active');
-            cardTrabalhar.classList.remove('active');
+    // Exibe/oculta seções específicas de cada wireframe
+    fieldsTrabalhador.style.display = 'block';
 
-            if (perfil === 'Contratante') {
-                cardContratar.classList.add('active');
-            } else {
-                cardTrabalhar.classList.add('active');
-            }
-        }
+    // Opcional: Atualizar a imagem lateral temporária para o trabalhador
+    visualImage.src = 'https://placehold.co/600x400/0284c7/ffffff?text=Imagem+Trabalhador';
+  }
 
-        if (inputPerfil) {
-            inputPerfil.value = perfil;
-        }
-    };
+  // Função para alternar para a view de Contratante
+  function ativarModoContratante() {
+    cardTrabalhador.classList.remove('active');
+    cardContratante.classList.add('active');
+    
+    document.body.classList.remove('theme-trabalhador');
+    tipoPerfilInput.value = 'Contratante';
 
-    // Adiciona o evento de clique direto nos cards do HTML
-    const cardTrabalhador = document.querySelector('[data-role="trabalhador"]');
-    const cardContratante = document.querySelector('[data-role="contratante"]');
+    fieldsTrabalhador.style.display = 'none';
 
-    if (cardTrabalhador) {
-        cardTrabalhador.addEventListener('click', () => selecionarPerfil('Trabalhador'));
-    }
-    if (cardContratante) {
-        cardContratante.addEventListener('click', () => selecionarPerfil('Contratante'));
-    }
+    // Voltar imagem temporária do contratante
+    visualImage.src = 'https://placehold.co/600x400/16a34a/ffffff?text=Imagem+Contratante';
+  }
 
+  cardContratante.addEventListener('click', ativarModoContratante);
+  cardTrabalhador.addEventListener('click', ativarModoTrabalhador);
 
-    // 2. Mostrar/Esconder a senha
-    const toggleButtons = document.querySelectorAll('[data-toggle-password]');
-
-    toggleButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const inputId = this.getAttribute('data-toggle-password');
-            const inputField = document.getElementById(inputId);
-
-            if (inputField) {
-                if (inputField.type === 'password') {
-                    inputField.type = 'text';
-                    this.textContent = '🙈'; // Troca o ícone/emoji quando a senha fica visível
-                } else {
-                    inputField.type = 'password';
-                    this.textContent = '👁️'; // Troca de volta para o olho
-                }
-            }
-        });
+  // Toggle de visibilidade da senha
+  document.querySelectorAll('[data-toggle-password]').forEach(button => {
+    button.addEventListener('click', () => {
+      const inputId = button.getAttribute('data-toggle-password');
+      const input = document.getElementById(inputId);
+      if (input) {
+        input.type = input.type === 'password' ? 'text' : 'password';
+      }
     });
-
+  });
 });

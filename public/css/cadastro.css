@@ -1,3 +1,24 @@
+
+/* Quando o modo Trabalhador estiver ativo, as variáveis mudam automaticamente */
+body.theme-trabalhador {
+  /* Cores do Trabalhador (Azul / Tiê-de-sangue ou Tom Personalizado) */
+  --brand-50: #ffffff;
+  --brand-100: #ffffff;
+  --brand-500: #aa0c04; /* Azul Principal */
+  --brand-600: #aa0c04; /* Hover do Botão */
+  --brand-700: #aa0c04;
+}
+
+/* Estilo adicional para o card ativo no seletor */
+.role-card.active {
+  border-color: var(--brand-500);
+  background: var(--brand-50);
+}
+
+.role-card.active span {
+  color: var(--brand-700);
+}
+
 /* =========================================================
    Variáveis Globais de Cores - Tema Araponga & Ibico
    ========================================================= */
@@ -5,12 +26,12 @@
   /* Cores Principais (Araponga) */
   --brand-50: #f0fdf4;
   --brand-100: #dcfce7;
-  --brand-500: #16a34a; /* Verde Araponga */
+  --brand-500: #16a34a; 
   --brand-600: #15803d;
   --brand-700: #116530;
 
   /* Cores de Destaque / Ação */
-  --accent-100: #e0f2fe;
+  --accent-100: #ffffff;
   --accent-500: #0284c7; /* Azul Araponga */
   --accent-600: #0369a1;
 
