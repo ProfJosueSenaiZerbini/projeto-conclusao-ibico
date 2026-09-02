@@ -9,7 +9,7 @@ O **iBico** é uma plataforma desenvolvida para conectar **contratantes** a **pr
 * **Guilherme Iscaro** — [GitHub](https://github.com/iscaroo)
 * **Pedro Henrique** —  [GitHub](https://github.com/Pedrin-com)
 * **Bruno Henrique** — [GitHub](https://github.com/araujonascimentobrunohentique-crypto)
-* **Francisco Kaique** — [GitHub](https://github.com/usuario4)
+* **Francisco Kaique** — [GitHub]([https://github.com/francisco292)
 * **Victor Barros** — [GitHub](https://github.com/usuario4)
 
 ---
