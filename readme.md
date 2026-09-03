@@ -63,6 +63,7 @@ Pelo Terminal:
 ```Bash
 mysql -u seu_usuario -p < schema.sql
 ```
+ou
 
 Pelo phpMyAdmin / MySQL Workbench: Abra o arquivo schema.sql no seu cliente MySQL e execute todo o script.
 
