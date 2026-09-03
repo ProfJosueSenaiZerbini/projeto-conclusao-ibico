@@ -246,6 +246,11 @@ border-radius: 100px;
   color: var(--ink-700);
 }
 
+.checkbox-row label {
+  flex: 1;
+  line-height: 1.4;
+}
+
 .checkbox-row input[type="checkbox"] {
   accent-color: var(--brand-500);
   margin-top: 3px;
@@ -296,6 +301,19 @@ border-radius: 100px;
   }
   .auth-split-visual {
     display: none; /* Esconde a lateral visual em celulares */
+  }
+
+  /* Empilha os campos para evitar placeholders cortados no celular. */
+  .input-row {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-split-form {
+    padding: 24px 16px;
+  }
+
+  .auth-box {
+    padding: 28px 20px;
   }
 }
 

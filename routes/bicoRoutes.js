@@ -5,12 +5,15 @@ import {
     exibirDetalhesBico,
     exibirBicosAtivosContratante
 } from '../controllers/bicoController.js';
+import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/ativos', exibirBicosAtivosContratante);
-router.get('/novo', exibirFormularioPublicar);
-router.post('/novo', cadastrarBico);
-router.get('/:id', exibirDetalhesBico);
+// Publicacao e gerenciamento de bicos pertencem ao contratante.
+router.get('/ativos', requireAuth, requireRole('contratante'), exibirBicosAtivosContratante);
+router.get('/novo', requireAuth, requireRole('contratante'), exibirFormularioPublicar);
+router.post('/novo', requireAuth, requireRole('contratante'), cadastrarBico);
+// Os detalhes podem ser vistos por qualquer usuario autenticado.
+router.get('/:id', requireAuth, exibirDetalhesBico);
 
 export default router;

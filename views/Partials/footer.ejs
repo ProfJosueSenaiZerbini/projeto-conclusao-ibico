@@ -15,8 +15,15 @@
     <div class="footer-links">
       <div class="footer-col">
         <h4>Plataforma</h4>
-        <a href="/homeContratante">Início</a>
-        <a href="/publicarBico">Publicar Bico</a>
+        <% if (usuario && usuario.tipo_perfil && usuario.tipo_perfil.toLowerCase() === 'trabalhador') { %>
+          <!-- Trabalhadores recebem apenas links disponiveis para seu perfil. -->
+          <a href="/hometrabalhador">Início</a>
+          <a href="/historico">Histórico</a>
+        <% } else { %>
+          <!-- O link usa a rota real de publicacao de bicos. -->
+          <a href="/homeContratante">Início</a>
+          <a href="/bicos/novo">Publicar Bico</a>
+        <% } %>
       </div>
 
       <div class="footer-col">

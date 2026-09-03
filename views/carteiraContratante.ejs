@@ -13,7 +13,7 @@
 
 <body>
 
-  <%- include('partials/headerContratante') %>
+  <%- include('Partials/headerContratante') %>
 
     <main class="wallet">
       <header class="wallet__header">
@@ -90,7 +90,8 @@
                     </td>
                     <td
                       class="text-right <%= transacao.tipo === 'Entrada' ? 'wallet__value--positive' : 'wallet__value--negative' %>">
-                      <%= transacao.tipo==='Entrada' ? '+' : '-' %> R$ <%= transacao.valor.toFixed(2).replace('.', ',' )
+                      <!-- DECIMAL do MariaDB pode ser string, por isso a conversao ocorre antes do toFixed. -->
+                      <%= transacao.tipo==='Entrada' ? '+' : '-' %> R$ <%= Number(transacao.valor || 0).toFixed(2).replace('.', ',' )
                           %>
                     </td>
                   </tr>
@@ -108,7 +109,7 @@
       </section>
     </main>
 
-    <%- include('partials/footer') %>
+    <%- include('Partials/footer') %>
 
 </body>
 

@@ -11,7 +11,7 @@
 </head>
 <body>
 
-  <%- include('partials/headerContratante') %>
+  <%- include('Partials/headerContratante') %>
 
   <main class="dashboard-container">
     <!-- Cabeçalho -->
@@ -24,14 +24,14 @@
       <a href="/bicos/novo" class="btn-new-job">+ Publicar Novo Bico</a>
     </header>
 
-    <!-- Cards de Métricas (Estatísticas) -->
+    <!-- As metricas agora sao calculadas com os bicos retornados pelo banco. -->
     <section class="metrics-grid">
       <div class="metric-card">
         <div class="metric-icon icon-green">✓</div>
         <div class="metric-info">
           <span class="metric-label">Bicos ativos</span>
-          <strong class="metric-value">04</strong>
-          <span class="metric-sub text-green">+1 este mês</span>
+          <strong class="metric-value"><%= bicos.length %></strong>
+          <span class="metric-sub text-green">Ativos agora</span>
         </div>
       </div>
 
@@ -39,8 +39,8 @@
         <div class="metric-icon icon-yellow">🕒</div>
         <div class="metric-info">
           <span class="metric-label">Em andamento</span>
-          <strong class="metric-value">02</strong>
-          <span class="metric-sub text-muted">Tudo no prazo</span>
+          <strong class="metric-value"><%= bicos.filter(bico => bico.status === 'Em andamento').length %></strong>
+          <span class="metric-sub text-muted">Em andamento</span>
         </div>
       </div>
 
@@ -48,8 +48,8 @@
         <div class="metric-icon icon-blue">💼</div>
         <div class="metric-info">
           <span class="metric-label">Investido no mês</span>
-          <strong class="metric-value">R$ 1.240</strong>
-          <span class="metric-sub text-green">+12% vs. julho</span>
+          <strong class="metric-value">R$ <%= bicos.reduce((total, bico) => total + Number(bico.valor || 0), 0).toFixed(2).replace('.', ',') %></strong>
+          <span class="metric-sub text-green">Valor dos bicos ativos</span>
         </div>
       </div>
     </section>
@@ -59,7 +59,7 @@
       <div class="section-bar">
         <div class="section-title">
           <h2>Seus bicos</h2>
-          <p>4 oportunidades ativas</p>
+          <p><%= bicos.length %> oportunidades ativas</p>
         </div>
 
         <div class="filters-bar">
@@ -68,128 +68,48 @@
             <input type="text" placeholder="Buscar bico...">
           </div>
           <div class="filter-tabs">
-            <button class="filter-btn active">Todos <span>4</span></button>
-            <button class="filter-btn">Abertos <span>2</span></button>
-            <button class="filter-btn">Em andamento <span>2</span></button>
+            <button class="filter-btn active">Todos <span><%= bicos.length %></span></button>
+            <button class="filter-btn">Abertos <span><%= bicos.filter(bico => bico.status === 'Aberto').length %></span></button>
+            <button class="filter-btn">Em andamento <span><%= bicos.filter(bico => bico.status === 'Em andamento').length %></span></button>
           </div>
         </div>
       </div>
 
-      <!-- Grid de Bicos -->
+      <!-- Os cards sao gerados dinamicamente para evitar dados ficticios na tela. -->
       <div class="jobs-grid">
         
-        <!-- Card 1 (Em andamento) -->
+        <% bicos.forEach(bico => { %>
         <article class="job-card">
           <div class="job-card-header">
-            <span class="badge badge-ongoing">• Em andamento</span>
+            <span class="badge <%= bico.status === 'Em andamento' ? 'badge-ongoing' : 'badge-open' %>">• <%= bico.status %></span>
             <button class="btn-more">•••</button>
           </div>
-          <h3 class="job-title">Fotógrafo para ensaio de família</h3>
+          <h3 class="job-title"><%= bico.titulo %></h3>
           <div class="job-meta">
-            <span>📍 Jardim América</span>
-            <span>🕒 Hoje, 14:00</span>
+            <span>📍 <%= bico.bairro %></span>
+            <span>🕒 <%= bico.data_servico_formatada %> <%= bico.horario %></span>
           </div>
           <div class="job-footer">
             <div class="user-info">
-              <div class="avatar avatar-purple">LC</div>
+              <div class="avatar avatar-purple"><%= bico.nome_trabalhador ? bico.nome_trabalhador.slice(0, 2).toUpperCase() : '+' %></div>
               <div>
-                <span class="user-role">Profissional</span>
-                <strong class="user-name">Lucas Costa</strong>
+                <span class="user-role"><%= bico.nome_trabalhador ? 'Profissional' : 'Propostas' %></span>
+                <strong class="user-name"><%= bico.nome_trabalhador || 'Aguardando profissional' %></strong>
               </div>
             </div>
             <div class="price-info">
               <span class="price-label">Valor combinado</span>
-              <strong class="price-value">R$ 380</strong>
+              <strong class="price-value">R$ <%= Number(bico.valor || 0).toFixed(2).replace('.', ',') %></strong>
             </div>
           </div>
-          <a href="/bicos/1" class="job-link">Ver Detalhes <span>→</span></a>
+          <a href="/#" class="job-link">Ver Detalhes <span>→</span></a>
         </article>
-
-        <!-- Card 2 (Aberto) -->
-        <article class="job-card">
-          <div class="job-card-header">
-            <span class="badge badge-open">• Aberto</span>
-            <button class="btn-more">•••</button>
-          </div>
-          <h3 class="job-title">Montagem de armário de cozinha</h3>
-          <div class="job-meta">
-            <span>📍 Vila Madalena</span>
-            <span>🕒 Amanhã, 09:30</span>
-          </div>
-          <div class="job-footer">
-            <div class="user-info">
-              <div class="avatar avatar-proposals">+3</div>
-              <div>
-                <span class="user-role">Propostas</span>
-                <strong class="user-name">3 profissionais</strong>
-              </div>
-            </div>
-            <div class="price-info">
-              <span class="price-label">Orçamento</span>
-              <strong class="price-value">R$ 220</strong>
-            </div>
-          </div>
-          <a href="/bicos/2" class="job-link">Ver Detalhes <span>→</span></a>
-        </article>
-
-        <!-- Card 3 (Em andamento) -->
-        <article class="job-card">
-          <div class="job-card-header">
-            <span class="badge badge-ongoing">• Em andamento</span>
-            <button class="btn-more">•••</button>
-          </div>
-          <h3 class="job-title">Manutenção do jardim</h3>
-          <div class="job-meta">
-            <span>📍 Alto da Lapa</span>
-            <span>🕒 30 ago, 08:00</span>
-          </div>
-          <div class="job-footer">
-            <div class="user-info">
-              <div class="avatar avatar-blue">RA</div>
-              <div>
-                <span class="user-role">Profissional</span>
-                <strong class="user-name">Rafael Alves</strong>
-              </div>
-            </div>
-            <div class="price-info">
-              <span class="price-label">Valor combinado</span>
-              <strong class="price-value">R$ 160</strong>
-            </div>
-          </div>
-          <a href="/bicos/3" class="job-link">Ver Detalhes <span>→</span></a>
-        </article>
-
-        <!-- Card 4 (Aberto) -->
-        <article class="job-card">
-          <div class="job-card-header">
-            <span class="badge badge-open">• Aberto</span>
-            <button class="btn-more">•••</button>
-          </div>
-          <h3 class="job-title">Instalação de prateleiras</h3>
-          <div class="job-meta">
-            <span>📍 Perdizes</span>
-            <span>🕒 02 set, 16:30</span>
-          </div>
-          <div class="job-footer">
-            <div class="user-info">
-              <div class="avatar avatar-proposals">+5</div>
-              <div>
-                <span class="user-role">Propostas</span>
-                <strong class="user-name">5 profissionais</strong>
-              </div>
-            </div>
-            <div class="price-info">
-              <span class="price-label">Orçamento</span>
-              <strong class="price-value">R$ 120</strong>
-            </div>
-          </div>
-          <a href="/bicos/4" class="job-link">Ver Detalhes <span>→</span></a>
-        </article>
+        <% }) %>
 
       </div>
     </section>
   </main>
 
-  <%- include('partials/footer') %>
+  <%- include('Partials/footer') %>
 </body>
 </html>

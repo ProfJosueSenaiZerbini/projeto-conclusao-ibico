@@ -2,8 +2,8 @@
 
 - Scripts de criação do banco de dados e tabelas com extesnão .sql
 
-CREATE DATABASE ibico_db;
-USE ibico_db;
+CREATE DATABASE db_bico;
+USE db_bico;
 
 -- Tabela de Usuários
 CREATE TABLE usuarios (

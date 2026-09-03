@@ -2,15 +2,21 @@
   <div class="navbar__inner">
     <div class="navbar__logo">Ibico</div>
     <nav class="navbar__links">
-      <a href="/hometrabalhador" class="nav-link nav-link--active">Início</a>
-      <a href="/historico" class="nav-link">Histórico</a>
-      <a href="/carteira/trabalhador" class="nav-link">Carteira</a>
+      <!-- A classe ativa acompanha a pagina atual. -->
+      <a href="/hometrabalhador" class="nav-link <%= rotaAtual === '/hometrabalhador' || rotaAtual === '/homeTrabalhador' ? 'nav-link--active' : '' %>">Início</a>
+      <a href="/historico" class="nav-link <%= rotaAtual === '/historico' || rotaAtual === '/historicoTrabalhador' ? 'nav-link--active' : '' %>">Histórico</a>
+      <a href="/carteira/trabalhador" class="nav-link <%= rotaAtual === '/carteira/trabalhador' ? 'nav-link--active' : '' %>">Carteira</a>
     </nav>
     
     <div class="navbar__actions">
       <button class="icon-btn" title="Notificações">
         <i class="far fa-bell"></i>
       </button>
+
+      <!-- Permite encerrar a sessao sem depender de JavaScript. -->
+      <form action="/logout" method="POST">
+        <button type="submit" class="logout-btn">Sair</button>
+      </form>
     </div>
   </div>
 </header>

@@ -24,6 +24,85 @@
   margin: 0 0 28px;
 }
 
+/* Os cards estaticos usam nomes proprios para manter a tela simples e legivel. */
+.tab-content {
+  width: 100%;
+}
+
+.tab-panel {
+  animation: panel-in 0.28s ease;
+}
+
+.bicos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bico-card {
+  background: var(--white, #FFFFFF);
+  border: 1px solid var(--line, #E7E5E0);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: var(--shadow, 0 1px 2px rgba(20, 33, 61, 0.04), 0 8px 20px rgba(20, 33, 61, 0.05));
+  padding: 24px 28px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.bico-card:hover {
+  box-shadow: 0 2px 4px rgba(20, 33, 61, 0.06), 0 12px 28px rgba(20, 33, 61, 0.08);
+  transform: translateY(-1px);
+}
+
+.bico-card__header,
+.bico-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.bico-card__header h3 {
+  color: var(--ink, #14213D);
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+.bico-card__desc {
+  color: var(--ink-soft, #4B5563);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  margin: 12px 0 18px;
+}
+
+.bico-card__footer {
+  border-top: 1px solid var(--line, #E7E5E0);
+  color: var(--ink-soft, #4B5563);
+  font-size: 0.88rem;
+  padding-top: 14px;
+}
+
+.badge--success,
+.badge--warning {
+  border-radius: var(--radius-full, 999px);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  white-space: nowrap;
+}
+
+.badge--success {
+  background: #E7F6EC;
+  color: #1E8E4F;
+}
+
+.badge--warning {
+  background: #FFF3D6;
+  color: #B4750C;
+}
+
 /* TABS (Bicos Aceitos / Bicos Pendentes) */
 .tabs {
   display: inline-flex;
@@ -259,5 +338,19 @@
 
   .btn {
     width: 100%;
+  }
+
+  .bico-card {
+    padding: 18px 20px;
+  }
+
+  .bico-card__header,
+  .bico-card__footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .bico-card__footer {
+    gap: 8px;
   }
 }

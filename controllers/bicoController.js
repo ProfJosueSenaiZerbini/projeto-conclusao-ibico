@@ -19,6 +19,7 @@ export const cadastrarBico = async (req, res) => {
     }
 
     try {
+        // Busca o bico e o nome do contratante para preencher a tela com dados reais.
         const query = `
             INSERT INTO bicos (contratante_id, titulo, descricao, valor, bairro, data_servico, horario, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, 'Aberto')
@@ -45,9 +46,15 @@ export const cadastrarBico = async (req, res) => {
 export const exibirDetalhesBico = async (req, res) => {
     const { id } = req.params;
 
+    // Mantem o controller protegido mesmo quando for chamado fora das rotas atuais.
+    if (!req.session?.usuario) {
+        return res.redirect('/login');
+    }
+
     try {
         const query = `
-            SELECT b.*, u.nome AS contratante_nome
+            SELECT b.*, u.nome AS contratante_nome,
+                   DATE_FORMAT(b.data_servico, '%d/%m/%Y') AS data_servico_formatada
             FROM bicos b
             JOIN usuarios u ON b.contratante_id = u.id
             WHERE b.id = ?
@@ -73,10 +80,15 @@ export const exibirDetalhesBico = async (req, res) => {
 };
 
 export const exibirBicosAtivosContratante = async (req, res) => {
-  try {
-    const usuarioId = req.session.usuario ? req.session.usuario.id : 1;
+    // Os bicos ativos devem pertencer ao contratante que esta logado.
+    if (!req.session?.usuario) {
+        return res.redirect('/login');
+    }
 
-    // Busca bicos do contratante logado (Aberto ou Em andamento)
+  try {
+        const usuarioId = req.session.usuario.id;
+
+    // Busca somente bicos do contratante logado que ainda estao ativos.
     const bicosAtivos = await db.query(
       `SELECT 
         b.id,

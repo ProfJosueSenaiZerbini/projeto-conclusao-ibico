@@ -36,6 +36,8 @@ app.use(session({
 // Disponibiliza as informações da sessão para todas as views (.ejs)
 app.use((req, res, next) => {
   res.locals.usuario = req.session.usuario || null;
+    // Disponibiliza a rota atual para destacar o item correto no menu.
+    res.locals.rotaAtual = req.path;
   next();
 });
 

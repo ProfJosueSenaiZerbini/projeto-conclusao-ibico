@@ -1,16 +1,21 @@
-import db from '../config/database.js'; // Ajuste o caminho se o seu arquivo de banco tiver outro nome
+import db from '../config/database.js';
 
 export const exibirCarteiraContratante = async (req, res) => {
-  try {
-    // Pegando o ID do usuário logado (Ajuste conforme a sua sessão)
-    const usuarioId = req.session.usuario ? req.session.usuario.id : 1; 
+  // A carteira so pode consultar dados depois que o usuario estiver autenticado.
+  if (!req.session?.usuario) {
+    return res.redirect('/login');
+  }
 
-    const [usuarios] = await db.query(
+  try {
+    const usuarioId = req.session.usuario.id;
+
+    // O driver MariaDB retorna diretamente um array de linhas, sem o array extra do mysql2.
+    const usuarios = await db.query(
       'SELECT saldo_simulado FROM usuarios WHERE id = ?',
       [usuarioId]
     );
 
-    const [estatisticas] = await db.query(
+    const estatisticas = await db.query(
       `SELECT 
         COALESCE(SUM(CASE WHEN status = 'Finalizado' THEN valor ELSE 0 END), 0) AS totalInvestido,
         COALESCE(COUNT(CASE WHEN status = 'Finalizado' THEN 1 END), 0) AS bicosFinalizados,
@@ -21,7 +26,7 @@ export const exibirCarteiraContratante = async (req, res) => {
       [usuarioId]
     );
 
-    const [transacoes] = await db.query(
+    const transacoes = await db.query(
       `SELECT 
         titulo AS descricao,
         valor,
@@ -34,6 +39,7 @@ export const exibirCarteiraContratante = async (req, res) => {
       [usuarioId]
     );
 
+    // DECIMAL pode chegar como string; Number padroniza os valores para a view.
     const carteira = {
       saldo: Number(usuarios[0]?.saldo_simulado || 0),
       totalInvestido: Number(estatisticas[0]?.totalInvestido || 0),
@@ -50,22 +56,27 @@ export const exibirCarteiraContratante = async (req, res) => {
 };
 
 export const exibirCarteiraTrabalhador = async (req, res) => {
-  try {
-    const usuarioId = req.session.usuario ? req.session.usuario.id : 1;
+  // Evita consultar a carteira de um usuario padrao ou de uma conta diferente.
+  if (!req.session?.usuario) {
+    return res.redirect('/login');
+  }
 
-    const [usuarios] = await db.query(
+  try {
+    const usuarioId = req.session.usuario.id;
+
+    const usuarios = await db.query(
       'SELECT saldo_simulado FROM usuarios WHERE id = ?',
       [usuarioId]
     );
 
-    const [retido] = await db.query(
+    const retido = await db.query(
       `SELECT COALESCE(SUM(valor), 0) AS saldoRetido 
        FROM bicos 
        WHERE trabalhador_id = ? AND status = 'Em andamento'`,
       [usuarioId]
     );
 
-    const [transacoes] = await db.query(
+    const transacoes = await db.query(
       `SELECT 
         titulo AS descricao,
         valor,

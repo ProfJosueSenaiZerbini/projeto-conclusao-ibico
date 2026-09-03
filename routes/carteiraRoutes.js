@@ -3,6 +3,7 @@ import {
   exibirCarteiraContratante, 
   exibirCarteiraTrabalhador 
 } from '../controllers/carteiraController.js';
+import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -29,7 +30,8 @@ router.get('/', (req, res) => {
   res.redirect('/login');
 });
 
-router.get('/contratante', exibirCarteiraContratante);
-router.get('/trabalhador', exibirCarteiraTrabalhador);
+// Cada usuario acessa somente a carteira do proprio perfil.
+router.get('/contratante', requireAuth, requireRole('contratante'), exibirCarteiraContratante);
+router.get('/trabalhador', requireAuth, requireRole('trabalhador'), exibirCarteiraTrabalhador);
 
 export default router;

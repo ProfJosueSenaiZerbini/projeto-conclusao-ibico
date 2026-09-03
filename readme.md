@@ -57,11 +57,12 @@ npm install
 ---
 
 ## 3. 🗄️ Configure o banco de dados
-Execute o arquivo schema.sql (localizado na raiz do projeto) no seu gerenciador de banco de dados para criar a base Ibico e toda a estrutura das tabelas.
+Execute o arquivo `schema.sql` (localizado na raiz do projeto) no seu gerenciador de banco de dados para criar a base `db_bico` e toda a estrutura das tabelas.
 
 Pelo Terminal:
 ```Bash
 mysql -u seu_usuario -p < schema.sql
+```
 
 Pelo phpMyAdmin / MySQL Workbench: Abra o arquivo schema.sql no seu cliente MySQL e execute todo o script.
 
@@ -74,9 +75,12 @@ Crie um arquivo `.env` na raiz do projeto:
 ```env
 DB_HOST=localhost
 DB_USER=seu_usuario
-DB_PASS=sua_senha
-DB_NAME=Ibico
+DB_PASSWORD=sua_senha
+DB_NAME=db_bico
+DB_PORT=3306
 PORT=3000
+NODE_ENV=development
+SESSION_SECRET=troque-por-um-segredo-forte
 ```
 
 > ⚠️ Não compartilhe o arquivo `.env` nem envie suas credenciais para o GitHub.

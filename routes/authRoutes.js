@@ -1,6 +1,7 @@
 import express from 'express';
 import pool from '../config/database.js';
 import { cadastrarUsuario, logarUsuario, homeContratante } from '../controllers/authController.js';
+import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -40,13 +41,27 @@ const renderHistoricoTrabalhador = (req, res) => {
     });
 };
 
-router.get('/hometrabalhador', renderHomeTrabalhador);
-router.get('/homeTrabalhador', renderHomeTrabalhador);
-router.get('/historico', renderHistoricoTrabalhador);
-router.get('/historicoTrabalhador', renderHistoricoTrabalhador);
+// O painel e o historico ficam restritos ao perfil trabalhador.
+router.get('/hometrabalhador', requireAuth, requireRole('trabalhador'), renderHomeTrabalhador);
+router.get('/homeTrabalhador', requireAuth, requireRole('trabalhador'), renderHomeTrabalhador);
+router.get('/historico', requireAuth, requireRole('trabalhador'), renderHistoricoTrabalhador);
+router.get('/historicoTrabalhador', requireAuth, requireRole('trabalhador'), renderHistoricoTrabalhador);
 
-router.get('/homeContratante', homeContratante);
+// O painel do contratante so pode ser acessado pelo perfil correspondente.
+router.get('/homeContratante', requireAuth, requireRole('contratante'), homeContratante);
 router.post('/cadastrar', cadastrarUsuario);
 router.post('/login', logarUsuario);
+
+// Encerra a sessao atual antes de devolver o usuario para o login.
+router.post('/logout', (req, res) => {
+    req.session.destroy((erro) => {
+        if (erro) {
+            console.error('Erro ao encerrar a sessao:', erro);
+            return res.status(500).send('Nao foi possivel sair da conta.');
+        }
+
+        return res.redirect('/login');
+    });
+});
 
 export default router;

@@ -1,13 +1,14 @@
-<header class="topbar">
+<header class="topbar topbar--contratante">
   <div class="topbar-left">
     <a href="/homeContratante" class="brand">
       <span class="brand-dot"></span>Ibico
     </a>
     <nav class="topbar-nav">
-      <a href="/homeContratante" class="nav-link active">Início</a>
-      <a href="/bicos/novo" class="nav-link">Publicar Bico</a>
-      <a href="/bicos/ativos" class="nav-link">Bicos</a>
-      <a href="/carteira/Contratante" class="nav-link">Carteira</a>
+      <!-- Destaca no menu a rota que esta aberta. -->
+      <a href="/homeContratante" class="nav-link <%= rotaAtual === '/homeContratante' ? 'active' : '' %>">Início</a>
+      <a href="/bicos/novo" class="nav-link <%= rotaAtual === '/bicos/novo' ? 'active' : '' %>">Publicar Bico</a>
+      <a href="/bicos/ativos" class="nav-link <%= rotaAtual === '/bicos/ativos' ? 'active' : '' %>">Bicos</a>
+      <a href="/carteira/contratante" class="nav-link <%= rotaAtual === '/carteira/contratante' ? 'active' : '' %>">Carteira</a>
     </nav>
   </div>
 
@@ -21,5 +22,10 @@
       <span><%= usuario && usuario.nome ? usuario.nome : 'Contratante' %></span>
       <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop" alt="Foto Perfil" class="avatar">
     </div>
+
+    <!-- O formulario envia POST para encerrar a sessao com seguranca. -->
+    <form action="/logout" method="POST">
+      <button type="submit" class="logout-btn">Sair</button>
+    </form>
   </div>
 </header>

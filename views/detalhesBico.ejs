@@ -9,23 +9,27 @@
 </head>
 <body>
 
-  <!-- PARTIAL DO HEADER -->
-  <%- include('partials/headerTrabalhador') %>
+  <!-- O cabecalho acompanha o perfil que esta visualizando a oportunidade. -->
+  <% if (usuario.tipo_perfil && usuario.tipo_perfil.toLowerCase() === 'contratante') { %>
+    <%- include('Partials/headerContratante') %>
+  <% } else { %>
+    <%- include('Partials/headertrabalhador') %>
+  <% } %>
 
   <!-- BANNER HERO -->
   <div class="hero-banner">
     <div class="banner-container">
       <div class="banner-info">
-        <span class="badge-status">Aberto</span>
-        <h1>Garçom para Evento Corporativo</h1>
+        <span class="badge-status"><%= bico.status %></span>
+        <h1><%= bico.titulo %></h1>
         <div class="banner-meta">
-          <span>📍 Centro, São Paulo</span>
-          <span>📅 20/08/2026</span>
+          <span>📍 <%= bico.bairro %></span>
+          <span>📅 <%= bico.data_servico_formatada %></span>
         </div>
       </div>
       <div class="banner-price">
         <span class="price-label">VALOR TOTAL</span>
-        <div class="price-value">R$ 180,00</div>
+        <div class="price-value">R$ <%= Number(bico.valor).toFixed(2).replace('.', ',') %></div>
         <span class="price-sub">Pagamento via PIX</span>
       </div>
     </div>
@@ -37,7 +41,7 @@
       <div class="section-block">
         <h3>Descrição da Vaga</h3>
         <p class="description-text">
-          Procuramos profissional com experiência em atendimento para evento de empresa. Responsável por servir bebidas e apoiar o buffet.
+          <%= bico.descricao %>
         </p>
       </div>
 
@@ -48,7 +52,7 @@
             <span class="icon">⏰</span>
             <div>
               <span class="card-label">Horário</span>
-              <strong>18:00 - 23:00</strong>
+              <strong><%= bico.horario %></strong>
             </div>
           </div>
           <div class="info-card">
@@ -67,17 +71,20 @@
       <div class="summary-card">
         <h3>Candidatar-se</h3>
         <div class="summary-item">
-          <span>Vagas restantes</span>
-          <strong>2 de 5</strong>
-        </div>
-        <button class="btn-accept">Quero este Bico</button>
-        <a href="/homeTrabalhador" class="btn-back">Voltar</a>
+          <span>Contratante</span>
+            <strong><%= bico.contratante_nome %></strong>
+          </div>
+          <% if (usuario.tipo_perfil && usuario.tipo_perfil.toLowerCase() === 'trabalhador' && bico.status === 'Aberto') { %>
+            <button class="btn-accept" type="button">Quero este Bico</button>
+          <% } %>
+        <!-- O retorno acompanha o perfil que abriu os detalhes. -->
+        <a href="<%= usuario.tipo_perfil && usuario.tipo_perfil.toLowerCase() === 'contratante' ? '/homeContratante' : '/hometrabalhador' %>" class="btn-back">Voltar</a>
       </div>
     </aside>
   </main>
 
   <!-- PARTIAL DO FOOTER -->
-  <%- include('partials/footer') %>
+  <%- include('Partials/footer') %>
 
 </body>
 </html>

@@ -1,12 +1,11 @@
 // Conexão com o mariadb
 import mariadb from 'mariadb';
 import dotenv from 'dotenv';
-import mysql from 'mysql2/promise';
 
-// Carrega as variaveis do ficheiro .env para a memória do node.js
+// Carrega as credenciais do banco antes de criar a pool de conexoes.
 dotenv.config();
 
-// piscina de conexões(pool);
+// O projeto usa o driver MariaDB; a pool reutiliza as conexoes entre as consultas.
 const pool = mariadb.createPool({
     host: process.env.DB_HOST,  
     user: process.env.DB_USER,
@@ -16,19 +15,19 @@ const pool = mariadb.createPool({
     connectionLimit: 5
 });
 
-// uma função asincrona com try cath para testar a conexão
-async function Testarconexão() {
-    let conexão;
+async function testarConexao() {
+    let conexao;
     try {
-        conexão = await pool.getConnection();
-        console.log('✅ Conexão com o mariadb concluida!!');
+        conexao = await pool.getConnection();
+        console.log('Conexao com o MariaDB concluida.');
     } catch (erro) {
         console.error('🚫 Erro de conexão:', erro.message);
-    }finally{
-        if (conexão) conexão.release(); // devolve a ligação para a pool
-    };
-};
+    } finally {
+        // Libera a conexao de teste para que ela volte a ficar disponivel na pool.
+        conexao?.release();
+    }
+}
 
-Testarconexão();
-// exporta a piscina para ser em todo o projeto
+testarConexao();
+
 export default pool;
