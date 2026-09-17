@@ -123,3 +123,60 @@ export const homeContratante = async (req, res) => {
         return res.status(500).send('Erro interno ao carregar a página.');
     }
 };
+
+export const exibirHistoricoTrabalhador = async (req, res) => {
+    const trabalhador_id = req.session?.usuario?.id || req.session?.usuario?.id_usuario;
+
+    if (!trabalhador_id) {
+        return res.redirect('/login');
+    }
+
+    try {
+        const queryAceitos = `
+            SELECT 
+                b.id AS bico_id,
+                b.titulo,
+                b.descricao,
+                b.valor,
+                b.status AS bico_status,
+                DATE_FORMAT(b.data_servico, '%d/%m/%Y') AS data_servico_formatada,
+                c.status AS candidatura_status
+            FROM candidaturas c
+            JOIN bicos b ON c.bico_id = b.id
+            WHERE c.trabalhador_id = ? AND c.status = 'Aceito'
+            ORDER BY b.data_servico DESC
+        `;
+
+        const queryPendentes = `
+            SELECT 
+                b.id AS bico_id,
+                b.titulo,
+                b.descricao,
+                b.valor,
+                b.status AS bico_status,
+                DATE_FORMAT(b.data_servico, '%d/%m/%Y') AS data_servico_formatada,
+                c.status AS candidatura_status
+            FROM candidaturas c
+            JOIN bicos b ON c.bico_id = b.id
+            WHERE c.trabalhador_id = ? AND c.status = 'Pendente'
+            ORDER BY c.criado_em DESC
+        `;
+
+        // Alterado de "db.query" para "pool.query"
+        const resAceitos = await pool.query(queryAceitos, [trabalhador_id]);
+        const resPendentes = await pool.query(queryPendentes, [trabalhador_id]);
+
+        const bicosAceitos = Array.isArray(resAceitos[0]) ? resAceitos[0] : resAceitos;
+        const bicosPendentes = Array.isArray(resPendentes[0]) ? resPendentes[0] : resPendentes;
+
+        return res.render('historicoTrabalhador', {
+            aceitos: Array.isArray(bicosAceitos) ? bicosAceitos : [],
+            pendentes: Array.isArray(bicosPendentes) ? bicosPendentes : [],
+            usuario: req.session.usuario
+        });
+
+    } catch (erro) {
+        console.error('❌ Erro ao buscar histórico do trabalhador:', erro);
+        return res.status(500).send('Erro ao carregar seu histórico.');
+    }
+};

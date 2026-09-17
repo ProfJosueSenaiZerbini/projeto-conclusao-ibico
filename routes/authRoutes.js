@@ -1,6 +1,6 @@
 import express from 'express';
 import pool from '../config/database.js';
-import { cadastrarUsuario, logarUsuario, homeContratante } from '../controllers/authController.js';
+import { cadastrarUsuario, logarUsuario, homeContratante, exibirHistoricoTrabalhador } from '../controllers/authController.js';
 import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -31,21 +31,12 @@ const renderHomeTrabalhador = async (req, res) => {
     }
 };
 
-const renderHistoricoTrabalhador = (req, res) => {
-    if (!req.session?.usuario) {
-        return res.redirect('/login');
-    }
-
-    return res.render('historicoTrabalhador', {
-        usuario: req.session.usuario
-    });
-};
 
 // O painel e o historico ficam restritos ao perfil trabalhador.
 router.get('/hometrabalhador', requireAuth, requireRole('trabalhador'), renderHomeTrabalhador);
 router.get('/homeTrabalhador', requireAuth, requireRole('trabalhador'), renderHomeTrabalhador);
-router.get('/historico', requireAuth, requireRole('trabalhador'), renderHistoricoTrabalhador);
-router.get('/historicoTrabalhador', requireAuth, requireRole('trabalhador'), renderHistoricoTrabalhador);
+router.get('/historico', requireAuth, requireRole('trabalhador'), exibirHistoricoTrabalhador);
+router.get('/historicoTrabalhador', requireAuth, requireRole('trabalhador'), exibirHistoricoTrabalhador);
 
 // O painel do contratante so pode ser acessado pelo perfil correspondente.
 router.get('/homeContratante', requireAuth, requireRole('contratante'), homeContratante);
