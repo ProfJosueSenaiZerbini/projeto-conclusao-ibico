@@ -5,46 +5,37 @@ import bcrypt from 'bcrypt';
 import pool from '../config/database.js';
 
 export const exibirPerfil = async (req, res) => {
-    try {
-        const usuarioId = req.session?.usuario?.id;
+    const usuarioSession = req.session?.usuario;
 
-        if (!usuarioId) {
+    if (!usuarioSession) {
+        return res.redirect('/login');
+    }
+
+    const usuarioId = usuarioSession.id || usuarioSession.id_usuario;
+
+    try {
+        // Busca os dados atualizados do banco de dados
+        const [usuarios] = await pool.query(
+            "SELECT id, nome, email, cpf, idade, tipo_perfil, DATE_FORMAT(criado_em, '%d/%m/%Y') AS data_cadastro_formatada FROM usuarios WHERE id = ?",
+            [usuarioId]
+        );
+
+        const usuario = Array.isArray(usuarios) ? usuarios[0] : usuarios;
+
+        if (!usuario) {
             return res.redirect('/login');
         }
 
-        // Busca Nome, Email, CPF, Idade, Perfil e Data de Cadastro direto no banco MySQL
-        const query = `
-            SELECT 
-                id, 
-                nome, 
-                email, 
-                cpf, 
-                idade, 
-                tipo_perfil, 
-                DATE_FORMAT(criado_em, '%d/%m/%Y') AS data_cadastro_formatada 
-            FROM usuarios 
-            WHERE id = ?
-        `;
+        // Seleciona a view de acordo com o perfil
+        const viewDestino = usuario.tipo_perfil && usuario.tipo_perfil.toLowerCase() === 'trabalhador' 
+            ? 'perfilTrabalhador' 
+            : 'perfilContratante';
 
-        const resultado = await pool.query(query, [usuarioId]);
-        
-        // Trata o resultado para pegar a lista de registros
-        const usuarios = Array.isArray(resultado[0]) ? resultado[0] : resultado;
-
-        if (!usuarios || usuarios.length === 0) {
-            return res.status(404).send('Usuário não encontrado.');
-        }
-
-        const usuarioDoBanco = usuarios[0];
-
-        // Renderiza a view 'perfilContratante' enviando os dados atualizados do banco
-        return res.render('perfilContratante', {
-            usuario: usuarioDoBanco
-        });
+        return res.render(viewDestino, { usuario });
 
     } catch (erro) {
-        console.error('❌ Erro ao buscar dados do perfil:', erro);
-        return res.status(500).send('Erro interno do servidor ao carregar o perfil.');
+        console.error('❌ Erro ao exibir perfil:', erro);
+        return res.status(500).send('Erro ao carregar os dados do perfil.');
     }
 };
 
