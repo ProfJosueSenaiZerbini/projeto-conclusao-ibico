@@ -2,9 +2,7 @@ import express from 'express';
 import { requireAuth } from '../middleware/authMiddleware.js';
 import { 
     exibirPerfil, 
-    exibirFormularioEditarPerfil, 
     atualizarPerfil, 
-    exibirFormularioAlterarSenha, 
     atualizarSenha
 } from '../controllers/perfilController.js';
 
@@ -18,8 +16,7 @@ router.get('/', requireAuth, exibirPerfil);
 router.get('/perfil', requireAuth, exibirPerfil);
 
 // Formulário e Ação de edição de perfil
-// GET /perfil/editar -> Exibe o formulário
-router.get('/editar', requireAuth, exibirFormularioEditarPerfil);
+router.get('/editar', requireAuth, (_req, res) => res.redirect('/perfil'));
 
 // ⬇️ POST /perfil/editar -> Processa a atualização do Modal!
 router.post('/editar', requireAuth, atualizarPerfil);
@@ -28,7 +25,7 @@ router.post('/editar', requireAuth, atualizarPerfil);
 router.post('/perfil/editar', requireAuth, atualizarPerfil);
 
 // Formulário e ação de alteração de senha
-router.get('/alterar-senha', requireAuth, exibirFormularioAlterarSenha);
+router.get('/alterar-senha', requireAuth, (_req, res) => res.redirect('/perfil'));
 router.post('/alterar-senha', requireAuth, atualizarSenha);
 
 export default router;

@@ -1,4 +1,3 @@
-import pool from './config/database.js';
 import express from 'express';
 import session from 'express-session';
 import morgan from 'morgan';

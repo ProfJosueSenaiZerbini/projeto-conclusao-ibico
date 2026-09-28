@@ -18,6 +18,11 @@ export const cadastrarBico = async (req, res) => {
         return res.redirect('/login');
     }
 
+    const valorNumerico = Number(valor);
+    if (!Number.isFinite(valorNumerico) || valorNumerico <= 0) {
+        return res.status(400).send('O valor do bico deve ser maior que zero.');
+    }
+
     try {
         // Busca o bico e o nome do contratante para preencher a tela com dados reais.
         const query = `
@@ -29,7 +34,7 @@ export const cadastrarBico = async (req, res) => {
             contratante_id,
             titulo,
             descricao,
-            valor,
+            valorNumerico,
             bairro,
             data_servico,
             horario

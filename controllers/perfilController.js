@@ -1,4 +1,3 @@
-import db from '../config/database.js';
 import bcrypt from 'bcrypt';
 
 // 1. Renderiza a tela visualizada no PDF (Perfil do Contratante / Trabalhador)
@@ -39,30 +38,7 @@ export const exibirPerfil = async (req, res) => {
     }
 };
 
-// 2. Renderiza formulário de edição de dados
-export const exibirFormularioEditarPerfil = async (req, res) => {
-    try {
-        const usuarioId = req.session?.usuario?.id;
-        if (!usuarioId) return res.redirect('/login');
-
-        const [usuarios] = await pool.query(
-            'SELECT id, nome, email, cpf, idade, tipo_perfil FROM usuarios WHERE id = ?',
-            [usuarioId]
-        );
-
-        if (!usuarios || usuarios.length === 0) {
-            return res.status(404).send('Usuário não encontrado.');
-        }
-
-        return res.render('editarPerfil', { usuario: usuarios[0] });
-    } catch (erro) {
-        console.error('❌ Erro ao carregar edição de perfil:', erro);
-        return res.status(500).send('Erro ao carregar a página de edição.');
-    }
-};
-
-// 3. Processa a atualização do perfil
-// Processa a atualização dos dados no banco MySQL e atualiza a sessão
+// Atualiza os dados do perfil e a sessao do usuario.
 export const atualizarPerfil = async (req, res) => {
     // Pega o ID do usuário logado na sessão
     const usuarioId = req.session?.usuario?.id || req.session?.usuario?.id_usuario;
@@ -72,24 +48,28 @@ export const atualizarPerfil = async (req, res) => {
     }
 
     const { nome, email, idade } = req.body;
+    const nomeNormalizado = typeof nome === 'string' ? nome.trim() : '';
+    const emailNormalizado = typeof email === 'string' ? email.trim() : '';
+    const idadeNumerica = Number(idade);
+
+    if (!nomeNormalizado || !emailNormalizado || !Number.isInteger(idadeNumerica) || idadeNumerica < 18) {
+        return res.status(400).send('Informe nome, e-mail e idade válida (18 anos ou mais).');
+    }
 
     try {
-        // 1. Executa a atualização no banco de dados
         await pool.query(
             'UPDATE usuarios SET nome = ?, email = ?, idade = ? WHERE id = ?',
-            [nome.trim(), email.trim(), idade || null, usuarioId]
+            [nomeNormalizado, emailNormalizado, idadeNumerica, usuarioId]
         );
 
-        // 2. Atualiza as informações guardadas na sessão
         if (req.session.usuario) {
-            req.session.usuario.nome = nome.trim();
-            req.session.usuario.email = email.trim();
-            req.session.usuario.idade = idade;
+            req.session.usuario.nome = nomeNormalizado;
+            req.session.usuario.email = emailNormalizado;
+            req.session.usuario.idade = idadeNumerica;
         }
 
         console.log(`✅ Perfil atualizado com sucesso via modal para o usuário ID ${usuarioId}!`);
 
-        // 3. Redireciona de volta para a mesma tela de perfil atualizada
         return res.redirect('/perfil');
 
     } catch (erro) {
@@ -98,12 +78,7 @@ export const atualizarPerfil = async (req, res) => {
     }
 };
 
-// 4. Renderiza formulário de alteração de senha
-export const exibirFormularioAlterarSenha = (req, res) => {
-    return res.render('alterarSenha', { usuario: req.session.usuario });
-};
-
-// 5. Processa a alteração de senha
+// Processa a alteracao de senha.
 export const atualizarSenha = async (req, res) => {
     const usuarioId = req.session?.usuario?.id || req.session?.usuario?.id_usuario;
     if (!usuarioId) return res.redirect('/login');
