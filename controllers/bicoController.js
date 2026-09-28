@@ -18,6 +18,11 @@ export const cadastrarBico = async (req, res) => {
         return res.redirect('/login');
     }
 
+    const valorNumerico = Number(valor);
+    if (!Number.isFinite(valorNumerico) || valorNumerico <= 0) {
+        return res.status(400).send('O valor do bico deve ser maior que zero.');
+    }
+
     try {
         const query = `
             INSERT INTO bicos (contratante_id, titulo, descricao, valor, bairro, data_servico, horario, status)
@@ -28,7 +33,7 @@ export const cadastrarBico = async (req, res) => {
             contratante_id,
             titulo,
             descricao,
-            valor,
+            valorNumerico,
             bairro,
             data_servico,
             horario

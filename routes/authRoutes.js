@@ -42,7 +42,6 @@ router.get('/historicoTrabalhador', requireAuth, requireRole('trabalhador'), exi
 router.get('/homeContratante', requireAuth, requireRole('contratante'), homeContratante);
 router.post('/cadastrar', cadastrarUsuario);
 router.post('/login', logarUsuario);
-
 // Encerra a sessao atual antes de devolver o usuario para o login.
 router.post('/logout', (req, res) => {
     req.session.destroy((erro) => {

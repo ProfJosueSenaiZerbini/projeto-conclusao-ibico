@@ -1,4 +1,3 @@
-import pool from './config/database.js';
 import express from 'express';
 import session from 'express-session';
 import morgan from 'morgan';
@@ -10,6 +9,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/authRoutes.js'; 
 import bicoRoutes from './routes/bicoRoutes.js';
 import carteiraRoutes from './routes/carteiraRoutes.js'; 
+import perfilRoutes from './routes/perfilRoutes.js';
 dotenv.config();
 
 const app = express();
@@ -47,8 +47,8 @@ app.use((req, res, next) => {
 app.use('/', authRoutes);
 app.use('/bicos', bicoRoutes);
 app.use('/carteira', carteiraRoutes);
+app.use('/perfil', perfilRoutes);
 
-// 3. ROTA INICIAL:
 // Se o usuário acessar a raiz (/), nós mandamos ele para a URL /login
 app.get('/', (req, res) => {
     res.redirect('/login');
