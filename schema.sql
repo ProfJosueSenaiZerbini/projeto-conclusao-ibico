@@ -62,3 +62,7 @@ CREATE TABLE IF NOT EXISTS historico_candidaturas (
     CONSTRAINT fk_historico_alterado_por FOREIGN KEY (alterado_por) 
 	REFERENCES usuarios(id)
 );
+
+SELECT * FROM db_bico.usuarios;
+SELECT * FROM db_bico.historico_candidaturas;
+DESCRIBE candidaturas;

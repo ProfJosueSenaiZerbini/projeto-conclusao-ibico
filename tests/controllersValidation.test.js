@@ -1,7 +1,10 @@
-import test from 'node:test';
+import test, { after } from 'node:test';
 import assert from 'node:assert/strict';
+import db from '../config/database.js';
 import { atualizarPerfil } from '../controllers/perfilController.js';
 import { cadastrarBico } from '../controllers/bicoController.js';
+
+after(async () => db.end());
 
 const criarResposta = () => ({
     statusCode: null,

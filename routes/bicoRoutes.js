@@ -9,6 +9,7 @@ import {
     atualizarStatusCandidatura,
     exibirHistoricoCandidatura,
     exibirGerenciamentoBico,
+    cancelarCandidatura,
 } from '../controllers/bicoController.js';
 import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 
@@ -35,6 +36,7 @@ router.get('/:id', requireAuth, exibirDetalhesBico);
 // Rota de gerenciamento exclusiva para o Contratante
 router.get('/:id/gerenciar', requireAuth, requireRole('contratante'), exibirGerenciamentoBico);
 
-
+// Adicione a rota protegida para perfil 'trabalhador'
+router.post('/candidaturas/cancelar', requireAuth, requireRole('trabalhador'), cancelarCandidatura);
 
 export default router;

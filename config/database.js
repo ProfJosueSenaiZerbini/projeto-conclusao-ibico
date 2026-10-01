@@ -15,19 +15,5 @@ const pool = mariadb.createPool({
     connectionLimit: 5
 });
 
-async function testarConexao() {
-    let conexao;
-    try {
-        conexao = await pool.getConnection();
-        console.log('Conexao com o MariaDB concluida.');
-    } catch (erro) {
-        console.error('🚫 Erro de conexão:', erro.message);
-    } finally {
-        // Libera a conexao de teste para que ela volte a ficar disponivel na pool.
-        conexao?.release();
-    }
-}
-
-testarConexao();
-
+// A pool abre conexões sob demanda, quando a aplicação executa uma consulta.
 export default pool;

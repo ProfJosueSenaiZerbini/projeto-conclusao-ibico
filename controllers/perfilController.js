@@ -1,123 +1,61 @@
 import bcrypt from 'bcrypt';
-
-// 1. Renderiza a tela visualizada no PDF (Perfil do Contratante / Trabalhador)
 import pool from '../config/database.js';
+import { erroDeDuplicidade, idadeValida, normalizarEmail, normalizarNome, senhaValida } from '../utils/validacaoUsuario.js';
 
 export const exibirPerfil = async (req, res) => {
-    const usuarioSession = req.session?.usuario;
-
-    if (!usuarioSession) {
-        return res.redirect('/login');
-    }
-
-    const usuarioId = usuarioSession.id || usuarioSession.id_usuario;
-
+    const sessao = req.session?.usuario;
+    if (!sessao) return res.redirect('/login');
     try {
-        // Busca os dados atualizados do banco de dados
-        const [usuarios] = await pool.query(
-            "SELECT id, nome, email, cpf, idade, tipo_perfil, DATE_FORMAT(criado_em, '%d/%m/%Y') AS data_cadastro_formatada FROM usuarios WHERE id = ?",
-            [usuarioId]
-        );
-
-        const usuario = Array.isArray(usuarios) ? usuarios[0] : usuarios;
-
-        if (!usuario) {
-            return res.redirect('/login');
-        }
-
-        // Seleciona a view de acordo com o perfil
-        const viewDestino = usuario.tipo_perfil && usuario.tipo_perfil.toLowerCase() === 'trabalhador' 
-            ? 'perfilTrabalhador' 
-            : 'perfilContratante';
-
-        return res.render(viewDestino, { usuario });
-
+        const rows = await pool.query("SELECT id, nome, email, cpf, idade, tipo_perfil, DATE_FORMAT(criado_em, '%d/%m/%Y') AS data_cadastro_formatada FROM usuarios WHERE id = ?", [sessao.id || sessao.id_usuario]);
+        const usuario = rows[0];
+        if (!usuario) return res.redirect('/login');
+        return res.render(usuario.tipo_perfil?.toLowerCase() === 'trabalhador' ? 'perfilTrabalhador' : 'perfilContratante', { usuario });
     } catch (erro) {
-        console.error('❌ Erro ao exibir perfil:', erro);
+        console.error('Erro ao exibir perfil:', erro?.code || 'erro inesperado');
         return res.status(500).send('Erro ao carregar os dados do perfil.');
     }
 };
 
-// Atualiza os dados do perfil e a sessao do usuario.
-export const atualizarPerfil = async (req, res) => {
-    // Pega o ID do usuário logado na sessão
-    const usuarioId = req.session?.usuario?.id || req.session?.usuario?.id_usuario;
-
-    if (!usuarioId) {
-        return res.redirect('/login');
-    }
-
-    const { nome, email, idade } = req.body;
-    const nomeNormalizado = typeof nome === 'string' ? nome.trim() : '';
-    const emailNormalizado = typeof email === 'string' ? email.trim() : '';
-    const idadeNumerica = Number(idade);
-
-    if (!nomeNormalizado || !emailNormalizado || !Number.isInteger(idadeNumerica) || idadeNumerica < 18) {
-        return res.status(400).send('Informe nome, e-mail e idade válida (18 anos ou mais).');
-    }
-
+export const criarAtualizadorPerfil = (banco) => async (req, res) => {
+    const id = req.session?.usuario?.id || req.session?.usuario?.id_usuario;
+    if (!Number.isInteger(Number(id)) || Number(id) <= 0) return res.redirect('/login');
+    const body = req.body || {};
+    const nome = normalizarNome(body.nome), email = normalizarEmail(body.email);
+    const idade = idadeValida(body.idade) ? Number(body.idade) : null;
+    if (!nome) return res.status(400).send('Informe um nome com ate 100 caracteres.');
+    if (!email) return res.status(400).send('Informe um e-mail valido com ate 100 caracteres.');
+    if (idade === null) return res.status(400).send('Informe uma idade valida (18 anos ou mais).');
     try {
-        await pool.query(
-            'UPDATE usuarios SET nome = ?, email = ?, idade = ? WHERE id = ?',
-            [nomeNormalizado, emailNormalizado, idadeNumerica, usuarioId]
-        );
-
-        if (req.session.usuario) {
-            req.session.usuario.nome = nomeNormalizado;
-            req.session.usuario.email = emailNormalizado;
-            req.session.usuario.idade = idadeNumerica;
-        }
-
-        console.log(`✅ Perfil atualizado com sucesso via modal para o usuário ID ${usuarioId}!`);
-
+        const duplicados = await banco.query('SELECT id FROM usuarios WHERE email = ? AND id <> ? LIMIT 1', [email, Number(id)]);
+        if (duplicados.length) return res.status(409).send('Este e-mail ja esta cadastrado.');
+        await banco.query('UPDATE usuarios SET nome = ?, email = ?, idade = ? WHERE id = ?', [nome, email, idade, Number(id)]);
+        Object.assign(req.session.usuario, { nome, email, idade });
         return res.redirect('/perfil');
-
     } catch (erro) {
-        console.error('❌ Erro ao atualizar o perfil:', erro);
+        if (erroDeDuplicidade(erro)) return res.status(409).send('Este e-mail ja esta cadastrado.');
+        console.error('Erro ao atualizar perfil:', erro?.code || 'erro inesperado');
         return res.status(500).send('Erro interno do servidor ao tentar salvar o perfil.');
     }
 };
+export const atualizarPerfil = criarAtualizadorPerfil(pool);
 
-// Processa a alteracao de senha.
-export const atualizarSenha = async (req, res) => {
-    const usuarioId = req.session?.usuario?.id || req.session?.usuario?.id_usuario;
-    if (!usuarioId) return res.redirect('/login');
-
-    const { senhaAtual, novaSenha, confirmarNovaSenha } = req.body;
-
-    // 1. Validações básicas de preenchimento
-    if (!senhaAtual || !novaSenha || !confirmarNovaSenha) {
-        return res.status(400).send('Por favor, preencha todos os campos de senha.');
-    }
-
-    if (novaSenha !== confirmarNovaSenha) {
-        return res.status(400).send('A nova senha e a confirmação não conferem.');
-    }
-
+export const criarAtualizadorSenha = (banco, hasher = bcrypt) => async (req, res) => {
+    const id = req.session?.usuario?.id || req.session?.usuario?.id_usuario;
+    if (!Number.isInteger(Number(id)) || Number(id) <= 0) return res.redirect('/login');
+    const { senhaAtual, novaSenha, confirmarNovaSenha } = req.body || {};
+    if (![senhaAtual, novaSenha, confirmarNovaSenha].every((v) => typeof v === 'string' && v.length)) return res.status(400).send('Por favor, preencha todos os campos de senha.');
+    if (!senhaValida(novaSenha)) return res.status(400).send('A nova senha deve ter ao menos 6 caracteres e no maximo 72 bytes.');
+    if (novaSenha !== confirmarNovaSenha) return res.status(400).send('A nova senha e a confirmacao nao conferem.');
     try {
-        // 2. Busca a senha atual criptografada no banco de dados
-        const [usuarios] = await pool.query('SELECT senha FROM usuarios WHERE id = ?', [usuarioId]);
-        const usuario = Array.isArray(usuarios) ? usuarios[0] : usuarios;
-
-        if (!usuario) {
-            return res.status(404).send('Usuário não encontrado.');
-        }
-
-        // 3. Compara a senha informada com a senha salva no banco
-        const senhaCorreta = await bcrypt.compare(senhaAtual, usuario.senha);
-        if (!senhaCorreta) {
-            return res.status(401).send('A senha atual está incorreta.');
-        }
-
-        // 4. Criptografa a nova senha e atualiza no MySQL
-        const novaSenhaHash = await bcrypt.hash(novaSenha, 10);
-        await pool.query('UPDATE usuarios SET senha = ? WHERE id = ?', [novaSenhaHash, usuarioId]);
-
-        console.log(`✅ Senha alterada com sucesso para o usuário ID ${usuarioId}!`);
+        const rows = await banco.query('SELECT senha FROM usuarios WHERE id = ?', [Number(id)]);
+        if (!rows[0]) return res.status(404).send('Usuario nao encontrado.');
+        if (!await hasher.compare(senhaAtual, rows[0].senha)) return res.status(401).send('A senha atual esta incorreta.');
+        const hash = await hasher.hash(novaSenha, 10);
+        await banco.query('UPDATE usuarios SET senha = ? WHERE id = ?', [hash, Number(id)]);
         return res.redirect('/perfil');
-
     } catch (erro) {
-        console.error('❌ Erro ao alterar senha:', erro);
+        console.error('Erro ao alterar senha:', erro?.code || 'erro inesperado');
         return res.status(500).send('Erro interno ao tentar alterar a senha.');
     }
 };
+export const atualizarSenha = criarAtualizadorSenha(pool, bcrypt);

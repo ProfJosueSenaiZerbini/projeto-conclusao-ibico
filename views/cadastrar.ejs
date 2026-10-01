@@ -56,11 +56,11 @@
                 <div class="field">
                   <label for="nome">Nome Completo</label>
                   <input class="input" type="text" id="nome" name="nome" placeholder="Ex: João da Silva" required
-                    minlength="3">
+                    minlength="3" maxlength="100">
                 </div>
                 <div class="field">
                   <label for="cEmail">E-mail</label>
-                  <input class="input" type="email" id="cEmail" name="email" placeholder="seu@email.com" required>
+                  <input class="input" type="email" id="cEmail" name="email" placeholder="seu@email.com" required maxlength="100">
                 </div>
               </div>
 
@@ -89,7 +89,7 @@
                 <label for="cSenha">Senha</label>
                 <div class="input-with-icon">
                   <input class="input" type="password" id="cSenha" name="senha" placeholder="••••••••" required
-                    minlength="6">
+                    minlength="6" maxlength="72">
                   <button type="button" class="input-icon-btn" data-toggle-password="cSenha">👁️</button>
                 </div>
               </div>
@@ -97,7 +97,7 @@
                 <label for="cConfirma">Confirmar Senha</label>
                 <div class="input-with-icon">
                   <input class="input" type="password" id="cConfirma" name="confirmarSenha" placeholder="••••••••"
-                    required minlength="6">
+                    required minlength="6" maxlength="72">
                   <button type="button" class="input-icon-btn" data-toggle-password="cConfirma">👁️</button>
                 </div>
               </div>

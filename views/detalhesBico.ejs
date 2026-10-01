@@ -75,10 +75,12 @@
                 </div>
               </div>
 
+
               <!-- SIDEBAR -->
               <aside class="sidebar-right">
                 <div class="summary-card">
                   <h3>Candidatar-se</h3>
+
                   <div class="summary-item">
                     <span>Contratante</span>
                     <strong>
@@ -88,38 +90,69 @@
 
                   <% if (usuario.tipo_perfil && usuario.tipo_perfil.toLowerCase()==='trabalhador' ) { %>
 
-                    <!-- SE O TRABALHADOR JÁ SE CANDIDATOU -->
                     <% if (minhaCandidatura) { %>
+                      <!-- O trabalhador já se candidatou -->
                       <div
                         style="margin-top: 15px; padding: 12px; border-radius: 8px; background-color: #e3f2fd; border: 1px solid #90caf9; text-align: center;">
-                        <span style="font-size: 0.85rem; color: #1976d2; display: block;">Sua Candidatura:</span>
-                        <strong style="font-size: 1.1rem; color: #0d47a1;">✓ <%= minhaCandidatura.status %></strong>
-                        <small style="display: block; margin-top: 4px; color: #555;">Inscrito em <%=
-                            minhaCandidatura.data_candidatura %></small>
+                        <span style="font-size: 0.85rem; color: #1976d2; display: block;">
+                          Sua Candidatura:
+                        </span>
+
+                        <strong style="font-size: 1.1rem; color: #0d47a1;">
+                          ✓ <%= minhaCandidatura.status %>
+                        </strong>
+
+                        <small style="display: block; margin-top: 4px; color: #555;">
+                          Inscrito em <%= minhaCandidatura.data_candidatura %>
+                        </small>
                       </div>
 
-                      <!-- SE AINDA NÃO SE CANDIDATOU E O BICO ESTÁ ABERTO -->
-                      <% } else if (bico.status==='Aberto' ) { %>
-                        <form action="/bicos/candidatar" method="POST" style="width: 100%; margin-top: 15px;">
+                      <% if (minhaCandidatura.status==='Pendente' ) { %>
+                        <!-- Cancelar candidatura -->
+                        <form action="/bicos/candidaturas/cancelar" method="POST"
+                          style="width: 100%; margin-top: 15px;">
                           <input type="hidden" name="bico_id" value="<%= bico.id %>">
 
-                          <div style="margin-bottom: 12px; text-align: left;">
-                            <label for="mensagem"
-                              style="font-size: 0.85rem; color: #666; display: block; margin-bottom: 4px;">Mensagem
-                              (opcional):</label>
-                            <textarea name="mensagem" id="mensagem" rows="3"
-                              placeholder="Apresente-se brevemente ou tire dúvidas..."
-                              style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; resize: vertical;"></textarea>
-                          </div>
-
-                          <button class="btn-accept" type="submit" style="width: 100%;">Quero este Bico</button>
+                          <button class="btn-accept" type="submit" style="width: 100%;">
+                            Cancelar Candidatura
+                          </button>
                         </form>
                         <% } %>
 
-                          <% } %>
+                          <% } else if (bico.status==='Aberto' ) { %>
+                            <!-- Ainda não se candidatou e o bico está aberto -->
+                            <form action="/bicos/candidatar" method="POST" style="width: 100%; margin-top: 15px;">
 
-                            <a href="/hometrabalhador" class="btn-back"
-                              style="display: block; text-align: center; margin-top: 15px; text-decoration: none;">Voltar</a>
+                              <input type="hidden" name="bico_id" value="<%= bico.id %>">
+
+                              <div style="margin-bottom: 12px; text-align: left;">
+                                <label for="mensagem"
+                                  style="font-size: 0.85rem; color: #666; display: block; margin-bottom: 4px;">
+                                  Mensagem (opcional):
+                                </label>
+
+                                <textarea name="mensagem" id="mensagem" rows="3"
+                                  placeholder="Apresente-se brevemente ou tire dúvidas..."
+                                  style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 0.9rem; resize: vertical;"></textarea>
+                              </div>
+
+                              <button class="btn-accept" type="submit" style="width: 100%;">
+                                Quero este Bico
+                              </button>
+                            </form>
+
+                            <% } else { %>
+                              <p style="margin-top: 15px; text-align: center; color: #666;">
+                                Este bico não está mais disponível.
+                              </p>
+                              <% } %>
+
+                                <% } %>
+
+                                  <a href="/hometrabalhador" class="btn-back"
+                                    style="display: block; text-align: center; margin-top: 15px; text-decoration: none;">
+                                    Voltar
+                                  </a>
                 </div>
               </aside>
             </main>

@@ -1,64 +1,79 @@
 import pool from '../config/database.js';
 import bcrypt from 'bcrypt';
+import {
+    erroDeDuplicidade,
+    normalizarCpf,
+    normalizarEmail,
+    normalizarNome,
+    senhaValida
+} from '../utils/validacaoUsuario.js';
 
-export const cadastrarUsuario = async (req, res) => {
-    const { nome, email, cpf, maiorIdade, senha, confirmarSenha, tipoPerfil } = req.body;
+export const criarCadastradorUsuario = (banco, hasher = bcrypt) => async (req, res) => {
+    const body = req.body || {};
+    const nome = normalizarNome(body.nome, 3);
+    const email = normalizarEmail(body.email);
+    const cpf = normalizarCpf(body.cpf);
+    const tipoPerfilRecebido = typeof body.tipoPerfil === 'string' ? body.tipoPerfil.trim().toLowerCase() : '';
+    const tipoPerfil = ['contratante', 'trabalhador'].includes(tipoPerfilRecebido) ? tipoPerfilRecebido : null;
+
+    if (!nome) return res.status(400).send('Informe um nome entre 3 e 100 caracteres.');
+    if (!email) return res.status(400).send('Informe um e-mail válido com até 100 caracteres.');
+    if (!cpf) return res.status(400).send('Informe um CPF no formato 000.000.000-00.');
+    if (!body.senha || !body.confirmarSenha || typeof body.senha !== 'string' || typeof body.confirmarSenha !== 'string') {
+        return res.status(400).send('Senha e confirmação são obrigatórias.');
+    }
+    if (!senhaValida(body.senha)) {
+        return res.status(400).send('A senha deve ter ao menos 6 caracteres e no máximo 72 bytes.');
+    }
+    if (body.senha !== body.confirmarSenha) {
+        return res.status(400).send('As senhas não coincidem.');
+    }
+    if (!tipoPerfil) return res.status(400).send('Tipo de usuário inválido.');
+    if (!['on', 'true', '1', true].includes(body.termos)) {
+        return res.status(400).send('É necessário aceitar os termos de uso e a política de privacidade.');
+    }
+    if (!['on', 'true', '1', true].includes(body.maiorIdade)) {
+        return res.status(400).send('É necessário confirmar que possui 18 anos ou mais.');
+    }
 
     try {
-        if (!nome || !email || !cpf || !senha || !confirmarSenha || !tipoPerfil) {
-            return res.status(400).send('Todos os campos obrigatórios devem ser preenchidos.');
-        }
-
-        if (senha !== confirmarSenha) {
-            return res.status(400).send('As senhas não coincidem!');
-        }
-
-        if (tipoPerfil.toLowerCase() === 'trabalhador' && !maiorIdade) {
-            return res.status(403).send('Acesso Negado: Para trabalhar é preciso confirmar ter 18 anos ou mais!');
-        }
-
-        const usuarioExistente = await pool.query(
+        const usuarioExistente = await banco.query(
             'SELECT id FROM usuarios WHERE email = ? OR cpf = ?',
             [email, cpf]
         );
 
-        if (usuarioExistente?.length > 0) {
+        if (usuarioExistente.length > 0) {
             return res.status(409).send('E-mail ou CPF já cadastrado no sistema.');
         }
 
-        const salt = await bcrypt.genSalt(10);
-        const senhaCriptografada = await bcrypt.hash(senha, salt);
-        const idadeFixa = 18;
+        const salt = await hasher.genSalt(10);
+        const senhaCriptografada = await hasher.hash(body.senha, salt);
 
-        const queryInsert = `
-            INSERT INTO usuarios (nome, email, cpf, idade, senha, tipo_perfil)
-            VALUES (?, ?, ?, ?, ?, ?);
-        `;
+        await banco.query(
+            `INSERT INTO usuarios (nome, email, cpf, idade, senha, tipo_perfil)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [nome, email, cpf, 18, senhaCriptografada, tipoPerfil]
+        );
 
-        await pool.query(queryInsert, [
-            nome,
-            email,
-            cpf,
-            idadeFixa,
-            senhaCriptografada,
-            tipoPerfil
-        ]);
-
-        console.log('✅ Usuário cadastrado no banco com sucesso!');
         return res.redirect('/login');
     } catch (erro) {
-        console.error('❌ Erro no servidor durante cadastro:', erro);
-        return res.status(500).send('Erro interno do servidor ao tentar cadastrar.');
+        if (erroDeDuplicidade(erro)) {
+            return res.status(409).send('E-mail ou CPF já cadastrado no sistema.');
+        }
+        console.error('Erro interno durante cadastro:', erro?.code || 'erro inesperado');
+        return res.status(500).send('Erro interno ao tentar cadastrar.');
     }
 };
 
-export const logarUsuario = async (req, res) => {
+export const cadastrarUsuario = criarCadastradorUsuario(pool, bcrypt);
+
+export const criarAutenticadorUsuario = (banco, hasher = bcrypt) => async (req, res) => {
     const emailLimpo = req.body.email ? req.body.email.trim() : '';
     const { senha, tipoPerfil } = req.body;
 
     try {
         // Executa a consulta
-        const resultado = await pool.query(
+        const resultado = await banco.query(
             'SELECT id, nome, email, cpf, senha, tipo_perfil, saldo_simulado FROM usuarios WHERE email = ?',
             [emailLimpo]
         );
@@ -81,7 +96,7 @@ export const logarUsuario = async (req, res) => {
         }
 
         // Comparação da senha criptografada
-        const senhaValida = await bcrypt.compare(senha, usuario.senha);
+        const senhaValida = await hasher.compare(senha, usuario.senha);
         if (!senhaValida) {
             return res.status(401).send('Senha incorreta!');
         }
@@ -110,10 +125,12 @@ export const logarUsuario = async (req, res) => {
         return res.redirect('/homeContratante');
 
     } catch (error) {
-        console.error('❌ Erro detalhado no login:', error);
+        console.error('Erro no login:', error?.code || 'erro inesperado');
         return res.status(500).send('Erro interno do servidor ao tentar logar.');
     }
 };
+
+export const logarUsuario = criarAutenticadorUsuario(pool, bcrypt);
 
 export const homeContratante = async (req, res) => {
     try {
