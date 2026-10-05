@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import pool from '../config/database.js';
-import { erroDeDuplicidade, idadeValida, normalizarEmail, normalizarNome, senhaValida } from '../utils/validacaoUsuario.js';
+import { validarEmail, validarIdade, validarNome, validarSenha } from '../validations/usuarioValidation.js';
 
 export const exibirPerfil = async (req, res) => {
     const sessao = req.session?.usuario;
@@ -20,11 +20,12 @@ export const criarAtualizadorPerfil = (banco) => async (req, res) => {
     const id = req.session?.usuario?.id || req.session?.usuario?.id_usuario;
     if (!Number.isInteger(Number(id)) || Number(id) <= 0) return res.redirect('/login');
     const body = req.body || {};
-    const nome = normalizarNome(body.nome), email = normalizarEmail(body.email);
-    const idade = idadeValida(body.idade) ? Number(body.idade) : null;
-    if (!nome) return res.status(400).send('Informe um nome com ate 100 caracteres.');
-    if (!email) return res.status(400).send('Informe um e-mail valido com ate 100 caracteres.');
-    if (idade === null) return res.status(400).send('Informe uma idade valida (18 anos ou mais).');
+    const nome = typeof body.nome === 'string' ? body.nome.trim() : '';
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    if (!validarNome(nome) || !validarEmail(email) || !validarIdade(body.idade)) {
+        return res.status(400).send('Preencha nome, e-mail e uma idade válida (18 anos ou mais).');
+    }
+    const idade = Number(body.idade);
     try {
         const duplicados = await banco.query('SELECT id FROM usuarios WHERE email = ? AND id <> ? LIMIT 1', [email, Number(id)]);
         if (duplicados.length) return res.status(409).send('Este e-mail ja esta cadastrado.');
@@ -32,7 +33,7 @@ export const criarAtualizadorPerfil = (banco) => async (req, res) => {
         Object.assign(req.session.usuario, { nome, email, idade });
         return res.redirect('/perfil');
     } catch (erro) {
-        if (erroDeDuplicidade(erro)) return res.status(409).send('Este e-mail ja esta cadastrado.');
+        if (erro?.code === 'ER_DUP_ENTRY' || erro?.errno === 1062) return res.status(409).send('Este e-mail ja esta cadastrado.');
         console.error('Erro ao atualizar perfil:', erro?.code || 'erro inesperado');
         return res.status(500).send('Erro interno do servidor ao tentar salvar o perfil.');
     }
@@ -44,7 +45,7 @@ export const criarAtualizadorSenha = (banco, hasher = bcrypt) => async (req, res
     if (!Number.isInteger(Number(id)) || Number(id) <= 0) return res.redirect('/login');
     const { senhaAtual, novaSenha, confirmarNovaSenha } = req.body || {};
     if (![senhaAtual, novaSenha, confirmarNovaSenha].every((v) => typeof v === 'string' && v.length)) return res.status(400).send('Por favor, preencha todos os campos de senha.');
-    if (!senhaValida(novaSenha)) return res.status(400).send('A nova senha deve ter ao menos 6 caracteres e no maximo 72 bytes.');
+    if (!validarSenha(novaSenha)) return res.status(400).send('A nova senha deve ter ao menos 6 caracteres e no máximo 72 bytes.');
     if (novaSenha !== confirmarNovaSenha) return res.status(400).send('A nova senha e a confirmacao nao conferem.');
     try {
         const rows = await banco.query('SELECT senha FROM usuarios WHERE id = ?', [Number(id)]);
