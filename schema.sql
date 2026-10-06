@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS usuarios (
     saldo_simulado DECIMAL(10, 2) DEFAULT 0.00,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
 -- Tabela de Bicos (Vagas)
 CREATE TABLE IF NOT EXISTS bicos (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -62,7 +61,3 @@ CREATE TABLE IF NOT EXISTS historico_candidaturas (
     CONSTRAINT fk_historico_alterado_por FOREIGN KEY (alterado_por) 
 	REFERENCES usuarios(id)
 );
-
-SELECT * FROM db_bico.usuarios;
-SELECT * FROM db_bico.historico_candidaturas;
-DESCRIBE candidaturas;

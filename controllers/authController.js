@@ -99,8 +99,16 @@ export const criarAutenticadorUsuario = (banco, hasher = bcrypt) => async (req, 
     const senha = body.senha;
     const tipoPerfil = body.tipoPerfil;
 
-    if (!validarEmail(emailLimpo) || typeof senha !== 'string' || !senha) {
-        return res.status(400).send('Preencha o e-mail e a senha.');
+    if (!emailLimpo) {
+        return res.status(400).send('Preencha o e-mail.');
+    }
+
+    if (!validarEmail(emailLimpo)) {
+        return res.status(400).send('Digite um e-mail válido.');
+    }
+
+    if (typeof senha !== 'string' || !senha) {
+        return res.status(400).send('Preencha a senha.');
     }
 
     try {
