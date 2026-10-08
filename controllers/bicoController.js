@@ -7,7 +7,8 @@ export const exibirFormularioPublicar = (req, res) => {
     }
 
     return res.render('publicarBico', {
-        usuario: req.session.usuario
+        usuario: req.session.usuario,
+        erro: null
     });
 };
 
@@ -20,29 +21,48 @@ export const cadastrarBico = async (req, res) => {
     }
 
     if (!validarTituloBico(titulo)) {
-        return res.status(400).send('O título deve ter entre 3 e 100 caracteres.');
+        return res.status(400).render('publicarBico', {
+            usuario: req.session.usuario,
+            erro: 'O título deve ter entre 3 e 100 caracteres.'
+        });
     }
 
     if (!validarDescricaoBico(descricao)) {
-        return res.status(400).send('A descrição deve ter entre 10 e 500 caracteres.');
+        return res.status(400).render('publicarBico', {
+            usuario: req.session.usuario,
+            erro: 'A descrição deve ter entre 10 e 500 caracteres.'
+        });
     }
 
     if (!validarBairroBico(bairro)) {
-        return res.status(400).send('O bairro deve ter entre 2 e 100 caracteres.');
+        return res.status(400).render('publicarBico', {
+            usuario: req.session.usuario,
+            erro: 'O bairro deve ter entre 2 e 100 caracteres.'
+        });
     }
 
     if (!validarDataServico(data_servico)) {
-        return res.status(400).send('Informe a data do serviço.');
+        return res.status(400).render('publicarBico', {
+            usuario: req.session.usuario,
+            erro: 'Informe a data do serviço.'
+        });
     }
 
     if (!validarHorarioServico(horario)) {
-        return res.status(400).send('Informe o horário do serviço.');
+        return res.status(400).render('publicarBico', {
+            usuario: req.session.usuario,
+            erro: 'Informe o horário do serviço.'
+
+        });
     }
 
     const valorNumerico = Number(valor);
 
     if (!Number.isFinite(valorNumerico) || valorNumerico <= 0) {
-        return res.status(400).send('O valor do bico deve ser maior que zero.');
+        return res.status(400).render('publicarBico', {
+            usuario: req.session.usuario,
+            erro: ' O valor do bico deve ser maior que zero.'
+        });
     }
 
     try {
@@ -577,7 +597,7 @@ export const cancelarCandidatura = async (req, res) => {
     const bicoIdNum = Number(bico_id);
     const trabalhadorIdNum = Number(trabalhador_id);
 
-    
+
     try {
         const connection = await db.getConnection();
         await connection.beginTransaction();
