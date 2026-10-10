@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function ativarModoTrabalhador() {
     cardContratante.classList.remove('active');
     cardTrabalhador.classList.add('active');
-    
+
     document.body.classList.add('theme-trabalhador');
     tipoPerfilInput.value = 'Trabalhador';
 
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function ativarModoContratante() {
     cardTrabalhador.classList.remove('active');
     cardContratante.classList.add('active');
-    
+
     document.body.classList.remove('theme-trabalhador');
     tipoPerfilInput.value = 'Contratante';
 
@@ -37,6 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   cardContratante.addEventListener('click', ativarModoContratante);
   cardTrabalhador.addEventListener('click', ativarModoTrabalhador);
+
+  if (tipoPerfilInput.value.toLowerCase() === 'trabalhador') {
+    ativarModoTrabalhador();
+  } else {
+    ativarModoContratante();
+  }
 
   // Toggle de visibilidade da senha
   document.querySelectorAll('[data-toggle-password]').forEach(button => {

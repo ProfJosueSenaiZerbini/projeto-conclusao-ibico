@@ -11,6 +11,8 @@ const criarResposta = () => ({
     statusCode: null,
     mensagem: null,
     destino: null,
+    visualizacao: null,
+    dadosVisualizacao: null,
     status(codigo) {
         this.statusCode = codigo;
         return this;
@@ -21,6 +23,11 @@ const criarResposta = () => ({
     },
     redirect(destino) {
         this.destino = destino;
+        return this;
+    },
+    render(visualizacao, dados) {
+        this.visualizacao = visualizacao;
+        this.dadosVisualizacao = dados;
         return this;
     }
 });
@@ -92,5 +99,13 @@ test('rejeita valores fora dos limites antes de consultar o banco', async () => 
     );
 
     assert.equal(resposta.statusCode, 400);
+    assert.equal(resposta.visualizacao, 'cadastrar');
+    assert.equal(resposta.dadosVisualizacao.erro, 'A senha deve ter ao menos 6 caracteres e no máximo 72 bytes.');
+    assert.deepEqual(resposta.dadosVisualizacao.dados, {
+        nome: 'Ana Silva',
+        email: 'ana@exemplo.com',
+        cpf: '52998224725',
+        tipoPerfil: 'trabalhador'
+    });
     assert.equal(consultado, false);
 });

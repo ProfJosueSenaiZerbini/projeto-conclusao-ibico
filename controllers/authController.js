@@ -11,6 +11,19 @@ import {
 export const criarCadastradorUsuario = (banco, hasher = bcrypt) => async (req, res) => {
     const body = req.body || {};
 
+    const mostrarErro = (mensagem, status = 400) => {
+        return res.status(status).render('cadastrar', {
+            erro: mensagem,
+            dados: {
+                nome,
+                email,
+                cpf: cpfInformado,
+                tipoPerfil: tipoPerfilRecebido
+            }
+        });
+    };
+
+
     const nome = typeof body.nome === 'string' ? body.nome.trim() : '';
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
     const cpfInformado = typeof body.cpf === 'string' ? body.cpf.trim() : '';
@@ -19,43 +32,43 @@ export const criarCadastradorUsuario = (banco, hasher = bcrypt) => async (req, r
     const tipoPerfil = ['contratante', 'trabalhador'].includes(tipoPerfilRecebido) ? tipoPerfilRecebido : null;
 
     if (!nome || !email || !cpfInformado) {
-        return res.status(400).send('Preencha nome, e-mail e CPF.');
+        return mostrarErro('Preencha nome, e-mail e CPF.');
     }
 
     if (!validarEmail(email)) {
-        return res.status(400).send('Digite um e-mail válido.');
+        return mostrarErro('Digite um e-mail válido.');
     }
 
     if (!cpf) {
-        return res.status(400).send('Digite um CPF válido.');
+        return mostrarErro('Digite um CPF válido.');
     }
 
     if (!validarNome(nome, 3)) {
-        return res.status(400).send('O nome deve ter entre 3 e 100 caracteres.');
+        return mostrarErro('O nome deve ter entre 3 e 100 caracteres.');
     }
 
     if (!validarSenha(body.senha)) {
-        return res.status(400).send('A senha deve ter ao menos 6 caracteres e no máximo 72 bytes.');
+        return mostrarErro('A senha deve ter ao menos 6 caracteres e no máximo 72 bytes.');
     }
 
     if (typeof body.confirmarSenha !== 'string' || !body.confirmarSenha) {
-        return res.status(400).send('A confirmação da senha é obrigatória.');
+        return mostrarErro('A confirmação da senha é obrigatória.');
     }
 
     if (!validarConfirmacaoSenha(body.senha, body.confirmarSenha)) {
-        return res.status(400).send('As senhas não coincidem.');
+        return mostrarErro('As senhas não coincidem.');
     }
 
     if (!tipoPerfil) {
-        return res.status(400).send('Tipo de usuário inválido.');
+        return mostrarErro('Tipo de usuário inválido.');
     }
 
     if (!['on', 'true', '1', true].includes(body.termos)) {
-        return res.status(400).send('É necessário aceitar os termos de uso e a política de privacidade.');
+        return mostrarErro('É necessário aceitar os termos de uso e a política de privacidade.');
     }
 
     if (!['on', 'true', '1', true].includes(body.maiorIdade)) {
-        return res.status(400).send('É necessário confirmar que possui 18 anos ou mais.');
+        return mostrarErro('É necessário confirmar que possui 18 anos ou mais.');
     }
 
     try {
@@ -65,7 +78,7 @@ export const criarCadastradorUsuario = (banco, hasher = bcrypt) => async (req, r
         );
 
         if (usuarioExistente.length > 0) {
-            return res.status(409).send('E-mail ou CPF já cadastrado no sistema.');
+            return mostrarErro('E-mail ou CPF já cadastrado no sistema.', 409);
         }
 
         const salt = await hasher.genSalt(10);
@@ -80,10 +93,10 @@ export const criarCadastradorUsuario = (banco, hasher = bcrypt) => async (req, r
         return res.redirect('/login');
     } catch (erro) {
         if (erro?.code === 'ER_DUP_ENTRY' || erro?.errno === 1062) {
-            return res.status(409).send('E-mail ou CPF já cadastrado no sistema.');
+            return mostrarErro('E-mail ou CPF já cadastrado no sistema.', 409);
         }
         console.error('Erro interno durante cadastro:', erro?.code || 'erro inesperado');
-        return res.status(500).send('Erro interno ao tentar cadastrar.');
+        return mostrarErro('Erro interno ao tentar cadastrar.', 500);
     }
 };
 
@@ -91,6 +104,12 @@ export const cadastrarUsuario = criarCadastradorUsuario(pool, bcrypt);
 
 export const criarAutenticadorUsuario = (banco, hasher = bcrypt) => async (req, res) => {
     const body = req.body || {};
+
+     const mostrarErro = (mensagem, status = 400) => {
+        return res.status(status).render('login', {
+            erro: mensagem,
+        });
+    };
 
     const emailLimpo = typeof body.email === 'string'
         ? body.email.trim().toLowerCase()
@@ -100,15 +119,15 @@ export const criarAutenticadorUsuario = (banco, hasher = bcrypt) => async (req, 
     const tipoPerfil = body.tipoPerfil;
 
     if (!emailLimpo) {
-        return res.status(400).send('Preencha o e-mail.');
+        return mostrarErro('Preencha o e-mail.');
     }
 
     if (!validarEmail(emailLimpo)) {
-        return res.status(400).send('Digite um e-mail válido.');
+        return mostrarErro('Digite um e-mail válido.');
     }
 
     if (typeof senha !== 'string' || !senha) {
-        return res.status(400).send('Preencha a senha.');
+        return mostrarErro('Preencha a senha.');
     }
 
     try {
@@ -118,25 +137,25 @@ export const criarAutenticadorUsuario = (banco, hasher = bcrypt) => async (req, 
         );
 
         if (!usuarios || usuarios.length === 0) {
-            return res.status(401).send('E-mail não cadastrado!');
+            return mostrarErro('E-mail não cadastrado!');
         }
 
         const usuario = usuarios[0];
 
         if (!usuario || !usuario.senha) {
             console.error('Erro: consulta de login retornou um usuário sem senha.');
-            return res.status(500).send('Erro ao processar os dados do usuário.');
+            return mostrarErro('Erro ao processar os dados do usuário.');
         }
 
         // Comparação da senha criptografada
         const senhaValida = await hasher.compare(senha, usuario.senha);
         if (!senhaValida) {
-            return res.status(401).send('Senha incorreta!');
+            return mostrarErro('Senha incorreta!');
         }
 
         // Validação de tipo de perfil (se selecionado na tela de login)
         if (tipoPerfil && usuario.tipo_perfil.toLowerCase() !== tipoPerfil.toLowerCase()) {
-            return res.status(403).send(`Sua conta está cadastrada como ${usuario.tipo_perfil}. Alterne a opção para continuar.`);
+            return mostrarErro(`Sua conta está cadastrada como ${usuario.tipo_perfil}. Alterne a opção para continuar.`);
         }
 
         // Salva os dados do usuário na sessão

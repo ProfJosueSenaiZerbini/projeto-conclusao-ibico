@@ -1,11 +1,12 @@
-
 /* Quando o modo Trabalhador estiver ativo, as variáveis mudam automaticamente */
 body.theme-trabalhador {
   /* Cores do Trabalhador (Azul / Tiê-de-sangue ou Tom Personalizado) */
   --brand-50: #ffffff;
   --brand-100: #fcdcdc;
-  --brand-500: #aa0c04; /* Azul Principal */
-  --brand-600: #aa0c04; /* Hover do Botão */
+  --brand-500: #aa0c04;
+  /* Azul Principal */
+  --brand-600: #aa0c04;
+  /* Hover do Botão */
   --brand-700: #aa0c04;
   margin: 0;
   padding: 0;
@@ -29,13 +30,14 @@ body.theme-trabalhador {
   /* Cores Principais (Araponga) */
   --brand-50: #f0fdf4;
   --brand-100: #dcfce7;
-  --brand-500: #16a34a; 
+  --brand-500: #16a34a;
   --brand-600: #15803d;
   --brand-700: #116530;
 
   /* Cores de Destaque / Ação */
   --accent-100: #e0f2fe;
-  --accent-500: #0284c7; /* Azul Araponga */
+  --accent-500: #0284c7;
+  /* Azul Araponga */
   --accent-600: #0369a1;
 
   /* Neutros e Superfícies */
@@ -110,10 +112,10 @@ body.theme-trabalhador {
 .visual-photo img {
   width: 100%;
   display: block;
-border-radius: 100px;
+  border-radius: 100px;
 }
 
-.auth-box{
+.auth-box {
   background-color: #ffffff;
   padding: 50px;
   border-radius: 30px;
@@ -126,7 +128,7 @@ border-radius: 100px;
   justify-content: center;
   padding: 40px 24px;
   background: var(--surface);
-  
+
 }
 
 .auth-title {
@@ -266,7 +268,7 @@ border-radius: 100px;
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
-  transition:  0.2s ease;
+  transition: 0.2s ease;
 }
 
 .btn-teal:hover {
@@ -299,8 +301,10 @@ border-radius: 100px;
   .auth-split {
     grid-template-columns: 1fr;
   }
+
   .auth-split-visual {
-    display: none; /* Esconde a lateral visual em celulares */
+    display: none;
+    /* Esconde a lateral visual em celulares */
   }
 
   /* Empilha os campos para evitar placeholders cortados no celular. */
@@ -317,7 +321,81 @@ border-radius: 100px;
   }
 }
 
-.theme-contratante{
+.theme-contratante {
   margin: 0;
   padding: 0;
+}
+
+
+.erro-passarinho-cadastro {
+  position: fixed;
+  top: 90px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 1000;
+  animation: sairErroCadastro 0.5s ease 5s forwards;
+}
+
+.erro-passarinho-cadastro>img {
+  width: 70px;
+  height: auto;
+  animation: entrarPassarinhoCadastro 0.5s ease;
+}
+
+.balao-erro-cadastro {
+  position: relative;
+  width: 220px;
+  opacity: 0;
+  animation: aparecerBalaoCadastro 0.5s ease 0.4s forwards;
+}
+
+.balao-erro-cadastro>img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.balao-erro-cadastro span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  text-align: center;
+  color: white;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+@keyframes entrarPassarinhoCadastro {
+  from {
+    opacity: 0;
+    transform: translateX(-70px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes aparecerBalaoCadastro {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sairErroCadastro {
+  to {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
 }

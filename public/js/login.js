@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             birdWork.classList.remove('show');
             birdHire.classList.add('show');
             caption.innerHTML = '<div class="name">Araponga</div><div class="latin">Procnias nudicollis</div>';
-            
+
             if (tipoPerfilInput) tipoPerfilInput.value = 'contratante'; // Atualiza o valor do form
         } else {
             btnWork.classList.remove('active-work');
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             birdHire.classList.remove('show');
             birdWork.classList.add('show');
             caption.innerHTML = '<div class="name">Tiê-de-sangue</div><div class="latin">Ramphocelus bresilius</div>';
-            
+
             if (tipoPerfilInput) tipoPerfilInput.value = 'trabalhador'; // Atualiza o valor do form
         }
     }
@@ -39,4 +39,18 @@ document.addEventListener('DOMContentLoaded', () => {
         btnHire.addEventListener('click', () => selectMode('hire'));
         btnWork.addEventListener('click', () => selectMode('work'));
     }
+
+
+    const avisoErro = document.querySelector('.erro-passarinho-login');
+
+    if (avisoErro) {
+        setTimeout(() => {
+            avisoErro.classList.add('sumindo');
+
+            setTimeout(() => {
+                avisoErro.remove();
+            }, 500);
+        }, 4000);
+    }
+
 });
