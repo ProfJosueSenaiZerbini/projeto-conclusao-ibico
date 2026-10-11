@@ -56,6 +56,12 @@
                                                 <%= bico.data_servico_formatada %>
                                             </span>
                                         </div>
+                                        <% if (bico.candidatura_status === 'Aceito') { %>
+                                            <a
+                                                class="btn btn--primary"
+                                                href="/bicos/candidaturas/<%= bico.candidatura_id %>/chat"
+                                            >Abrir conversa</a>
+                                        <% } %>
                                     </li>
                                     <% }); %>
                             </ul>

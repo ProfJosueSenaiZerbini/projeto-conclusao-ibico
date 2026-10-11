@@ -232,6 +232,13 @@ body.theme-contratante .chat-context__tag {
   word-wrap: break-word;
   overflow-wrap: anywhere;
 }
+.message__autor {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
 .message__texto {
   margin: 0;
   font-size: 0.94rem;

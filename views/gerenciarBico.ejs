@@ -94,6 +94,8 @@
                           style="background: #c62828; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">Recusar</button>
                       </form>
                     </div>
+                    <% } else if (c.status_candidatura==='Aceito') { %>
+                      <a class="btn-back" href="/bicos/candidaturas/<%= c.candidatura_id %>/chat">Abrir conversa</a>
                     <% } %>
                 </div>
                 <% }); %>

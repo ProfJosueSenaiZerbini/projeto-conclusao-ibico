@@ -11,6 +11,11 @@ import {
     exibirGerenciamentoBico,
     cancelarCandidatura,
 } from '../controllers/bicoController.js';
+import {
+    exibirChatCandidatura,
+    listarNovasMensagensChat,
+    enviarMensagemChat
+} from '../controllers/chatController.js';
 import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -23,6 +28,9 @@ router.post('/novo', requireAuth, requireRole('contratante'), cadastrarBico);
 // Candidaturas - Ações do Contratante
 router.get('/:bico_id/candidatos', requireAuth, requireRole('contratante'), listarCandidatosBico);
 router.post('/candidaturas/status', requireAuth, requireRole('contratante'), atualizarStatusCandidatura);
+router.get('/candidaturas/:candidatura_id/chat', requireAuth, exibirChatCandidatura);
+router.get('/candidaturas/:candidatura_id/chat/mensagens', requireAuth, listarNovasMensagensChat);
+router.post('/candidaturas/:candidatura_id/chat/mensagens', requireAuth, enviarMensagemChat);
 
 // Candidaturas - Ação do Trabalhador
 router.post('/candidatar', requireAuth, requireRole('trabalhador'), candidatarAoBico);

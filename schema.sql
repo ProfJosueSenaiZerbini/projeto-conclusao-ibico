@@ -47,6 +47,20 @@ CREATE TABLE IF NOT EXISTS candidaturas (
     CONSTRAINT uk_bico_trabalhador UNIQUE (bico_id, trabalhador_id)
       -- Impede que o mesmo trabalhador se candidate mais de uma vez ao mesmo bico
 );
+
+-- Mensagens vinculadas à candidatura aceita que representa a conversa
+CREATE TABLE IF NOT EXISTS mensagens_chat (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    candidatura_id INT NOT NULL,
+    remetente_id INT NOT NULL,
+    texto TEXT NOT NULL,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_mensagens_chat_candidatura FOREIGN KEY (candidatura_id)
+        REFERENCES candidaturas(id) ON DELETE CASCADE,
+    CONSTRAINT fk_mensagens_chat_remetente FOREIGN KEY (remetente_id)
+        REFERENCES usuarios(id)
+);
+
 -- Tabela de Histórico de Status da Candidatura
 CREATE TABLE IF NOT EXISTS historico_candidaturas (
     id INT AUTO_INCREMENT PRIMARY KEY,

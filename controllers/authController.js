@@ -10,6 +10,7 @@ import {
 
 export const criarCadastradorUsuario = (banco, hasher = bcrypt) => async (req, res) => {
     const body = req.body || {};
+    const cpfsDeTeste = ['000.000.000-00', '999.999.999-99'];
 
     const mostrarErro = (mensagem, status = 400) => {
         return res.status(status).render('cadastrar', {
@@ -27,7 +28,12 @@ export const criarCadastradorUsuario = (banco, hasher = bcrypt) => async (req, r
     const nome = typeof body.nome === 'string' ? body.nome.trim() : '';
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
     const cpfInformado = typeof body.cpf === 'string' ? body.cpf.trim() : '';
-    const cpf = normalizarCPF(cpfInformado);
+    const cpfDeTeste = process.env.NODE_ENV === 'development'
+        ? cpfsDeTeste.find((cpfReservado) => (
+            cpfInformado === cpfReservado || cpfInformado === cpfReservado.replace(/\D/g, '')
+        ))
+        : null;
+    const cpf = cpfDeTeste || normalizarCPF(cpfInformado);
     const tipoPerfilRecebido = typeof body.tipoPerfil === 'string' ? body.tipoPerfil.trim().toLowerCase() : '';
     const tipoPerfil = ['contratante', 'trabalhador'].includes(tipoPerfilRecebido) ? tipoPerfilRecebido : null;
 
@@ -222,6 +228,7 @@ export const exibirHistoricoTrabalhador = async (req, res) => {
     try {
         const queryAceitos = `
             SELECT 
+                c.id AS candidatura_id,
                 b.id AS bico_id,
                 b.titulo,
                 b.descricao,

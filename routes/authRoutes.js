@@ -6,7 +6,7 @@ import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 router.get('/cadastrar', (_req, res) => {
-    res.render('cadastrar', { erro: null });
+    res.render('cadastrar', { erro: null, dados: {} });
 });
 
 router.get('/login', (req, res) => {

@@ -12,8 +12,18 @@ import carteiraRoutes from './routes/carteiraRoutes.js';
 import perfilRoutes from './routes/perfilRoutes.js';
 dotenv.config();
 
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret || sessionSecret.length < 32) {
+    throw new Error('Configure SESSION_SECRET com pelo menos 32 caracteres antes de iniciar o servidor.');
+}
+
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction && process.env.TRUST_PROXY === '1') {
+    app.set('trust proxy', 1);
+}
 
 // Configuração do express e EJS (Views)
 app.set('view engine', 'ejs');
@@ -27,10 +37,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Fluxo de login/configuração de sessão
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'chave-secreta-araponga',
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false } 
+    cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: isProduction
+    }
 }));
 
 // Disponibiliza as informações da sessão para todas as views (.ejs)
