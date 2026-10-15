@@ -9,6 +9,7 @@ import {
     atualizarStatusCandidatura,
     exibirHistoricoCandidatura,
     exibirGerenciamentoBico,
+    finalizarBico,
     cancelarCandidatura,
 } from '../controllers/bicoController.js';
 import {
@@ -28,6 +29,7 @@ router.post('/novo', requireAuth, requireRole('contratante'), cadastrarBico);
 // Candidaturas - Ações do Contratante
 router.get('/:bico_id/candidatos', requireAuth, requireRole('contratante'), listarCandidatosBico);
 router.post('/candidaturas/status', requireAuth, requireRole('contratante'), atualizarStatusCandidatura);
+router.post('/:id/finalizar', requireAuth, requireRole('contratante'), finalizarBico);
 router.get('/candidaturas/:candidatura_id/chat', requireAuth, exibirChatCandidatura);
 router.get('/candidaturas/:candidatura_id/chat/mensagens', requireAuth, listarNovasMensagensChat);
 router.post('/candidaturas/:candidatura_id/chat/mensagens', requireAuth, enviarMensagemChat);

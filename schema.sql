@@ -29,6 +29,22 @@ CREATE TABLE IF NOT EXISTS bicos (
     CONSTRAINT fk_bicos_trabalhador FOREIGN KEY (trabalhador_id) REFERENCES usuarios(id)
 );
 
+-- Eventos de status e outras ações relacionadas aos bicos
+CREATE TABLE IF NOT EXISTS historico_eventos_bicos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bico_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    tipo_evento VARCHAR(50) NOT NULL,
+    status_anterior ENUM('Aberto', 'Em andamento', 'Finalizado', 'Cancelado') DEFAULT NULL,
+    status_novo ENUM('Aberto', 'Em andamento', 'Finalizado', 'Cancelado') DEFAULT NULL,
+    observacao VARCHAR(255) DEFAULT NULL,
+    data_evento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_eventos_bico FOREIGN KEY (bico_id)
+        REFERENCES bicos(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_eventos_usuario FOREIGN KEY (usuario_id)
+        REFERENCES usuarios(id)
+);
+
 -- Tabela de Candidaturas
 -- Relaciona o trabalhador ao bico e armazena o status atual da candidatura
 CREATE TABLE IF NOT EXISTS candidaturas (

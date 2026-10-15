@@ -444,6 +444,89 @@ export const listarCandidatosBico = criarListadorCandidatosBico(db);
 
 export const atualizarStatusCandidatura = criarAtualizadorStatusCandidatura(db);
 
+export const finalizarBico = async (req, res) => {
+    const bicoIdNum = typeof req.params?.id === 'string' && req.params.id.trim() !== ''
+        ? Number(req.params.id)
+        : NaN;
+    const usuarioIdNum = Number(req.session?.usuario?.id || req.session?.usuario?.id_usuario);
+
+    if (!Number.isInteger(bicoIdNum) || bicoIdNum <= 0) {
+        return res.status(400).json({ sucesso: false, erro: 'Identificador de bico inválido.' });
+    }
+
+    if (!Number.isInteger(usuarioIdNum) || usuarioIdNum <= 0) {
+        return res.status(401).json({ sucesso: false, erro: 'Autenticação necessária.' });
+    }
+
+    let connection;
+    let transacaoAtiva = false;
+
+    try {
+        connection = await db.getConnection();
+        await connection.beginTransaction();
+        transacaoAtiva = true;
+
+        const resultadoBico = await connection.query(
+            'SELECT id, contratante_id, status FROM bicos WHERE id = ? FOR UPDATE',
+            [bicoIdNum]
+        );
+        const bico = obterPrimeiraLinha(resultadoBico);
+
+        if (!bico) {
+            await connection.rollback();
+            transacaoAtiva = false;
+            return res.status(404).json({ sucesso: false, erro: 'Bico não encontrado.' });
+        }
+
+        if (Number(bico.contratante_id) !== usuarioIdNum) {
+            await connection.rollback();
+            transacaoAtiva = false;
+            return res.status(403).json({ sucesso: false, erro: 'Você não tem autorização para finalizar este bico.' });
+        }
+
+        if (bico.status !== 'Em andamento') {
+            await connection.rollback();
+            transacaoAtiva = false;
+            return res.status(409).json({ sucesso: false, erro: 'Somente bicos em andamento podem ser finalizados.' });
+        }
+
+        const resultadoAtualizacao = await connection.query(
+            "UPDATE bicos SET status = 'Finalizado' WHERE id = ? AND contratante_id = ? AND status = 'Em andamento'",
+            [bicoIdNum, usuarioIdNum]
+        );
+
+        if (resultadoAtualizacao.affectedRows !== 1) {
+            await connection.rollback();
+            transacaoAtiva = false;
+            return res.status(409).json({ sucesso: false, erro: 'O status do bico mudou. Atualize a página e tente novamente.' });
+        }
+
+        await connection.query(
+            `INSERT INTO historico_eventos_bicos
+                (bico_id, usuario_id, tipo_evento, status_anterior, status_novo)
+             VALUES (?, ?, 'Finalizacao', ?, 'Finalizado')`,
+            [bicoIdNum, usuarioIdNum, bico.status]
+        );
+
+        await connection.commit();
+        transacaoAtiva = false;
+        return res.json({ sucesso: true, mensagem: 'Serviço finalizado com sucesso.', status: 'Finalizado' });
+    } catch (erro) {
+        if (connection && transacaoAtiva) {
+            try {
+                await connection.rollback();
+            } catch (erroRollback) {
+                console.error('Erro ao reverter transação de finalização do bico:', erroRollback);
+            }
+        }
+
+        console.error('ERRO AO FINALIZAR BICO:', erro);
+        return res.status(500).json({ sucesso: false, erro: 'Erro interno ao finalizar o bico.' });
+    } finally {
+        connection?.release();
+    }
+};
+
 // 4. Exibir o histórico apenas para o contratante do bico ou seu trabalhador.
 export const criarExibidorHistoricoCandidatura = (banco) => async (req, res) => {
     const { candidatura_id } = req.params || {};

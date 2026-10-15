@@ -18,7 +18,7 @@
       <!-- Cabeçalho do Bico -->
       <div class="section-block"
         style="background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e0e0e0;">
-        <span class="badge"
+        <span id="status-bico" class="badge"
           style="background-color: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 20px; font-weight: 600;">•
           <%= bico.status %></span>
         <h1 style="margin-top: 15px;">
@@ -43,6 +43,15 @@
         <p style="margin-top: 15px; color: #444;">
           <%= bico.descricao %>
         </p>
+        <% if (Number(usuario.id || usuario.id_usuario) === Number(bico.contratante_id) && bico.status === 'Em andamento') { %>
+          <form id="form-finalizar-bico" action="/bicos/<%= bico.id %>/finalizar" method="POST" style="margin-top: 18px;">
+            <button id="btn-finalizar-bico" type="submit"
+              style="background: #2e7d32; color: #fff; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: 600;">
+              Finalizar Serviço
+            </button>
+          </form>
+        <% } %>
+        <p id="feedback-finalizar-bico" role="status" aria-live="polite" style="margin-top: 10px;"></p>
       </div>
 
       <!-- Lista de Candidatos Inscritos -->
@@ -111,6 +120,7 @@
     </main>
 
     <%- include('Partials/footer') %>
+    <script src="/js/gerenciarBico.js" defer></script>
 </body>
 
 </html>
