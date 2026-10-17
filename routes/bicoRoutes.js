@@ -10,6 +10,7 @@ import {
     exibirHistoricoCandidatura,
     exibirGerenciamentoBico,
     finalizarBico,
+    salvarAvaliacaoBico,
     cancelarCandidatura,
 } from '../controllers/bicoController.js';
 import {
@@ -30,6 +31,7 @@ router.post('/novo', requireAuth, requireRole('contratante'), cadastrarBico);
 router.get('/:bico_id/candidatos', requireAuth, requireRole('contratante'), listarCandidatosBico);
 router.post('/candidaturas/status', requireAuth, requireRole('contratante'), atualizarStatusCandidatura);
 router.post('/:id/finalizar', requireAuth, requireRole('contratante'), finalizarBico);
+router.post('/:id/avaliacao', requireAuth, requireRole('contratante'), salvarAvaliacaoBico);
 router.get('/candidaturas/:candidatura_id/chat', requireAuth, exibirChatCandidatura);
 router.get('/candidaturas/:candidatura_id/chat/mensagens', requireAuth, listarNovasMensagensChat);
 router.post('/candidaturas/:candidatura_id/chat/mensagens', requireAuth, enviarMensagemChat);

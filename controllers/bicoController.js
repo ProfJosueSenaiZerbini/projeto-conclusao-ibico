@@ -244,6 +244,7 @@ export const candidatarAoBico = async (req, res) => {
     }
 };
 
+
 // 2. Contratante lista candidatos de um bico específico (RF005)
 export const criarListadorCandidatosBico = (banco) => async (req, res) => {
     const { bico_id } = req.params;
@@ -527,6 +528,95 @@ export const finalizarBico = async (req, res) => {
     }
 };
 
+export const salvarAvaliacaoBico = async (req, res) => {
+    const bicoIdNum = typeof req.params?.id === 'string' && req.params.id.trim() !== ''
+        ? Number(req.params.id)
+        : NaN;
+    const usuario = req.session?.usuario;
+    const perfil = typeof usuario?.tipo_perfil === 'string'
+        ? usuario.tipo_perfil.trim().toLowerCase()
+        : '';
+    const usuarioIdNum = Number(usuario?.id || usuario?.id_usuario);
+
+    if (!Number.isInteger(bicoIdNum) || bicoIdNum <= 0) {
+        return res.status(400).json({ sucesso: false, erro: 'Identificador de bico inválido.' });
+    }
+
+    if (!usuario || !Number.isInteger(usuarioIdNum) || usuarioIdNum <= 0) {
+        return res.status(401).json({ sucesso: false, erro: 'Autenticação necessária.' });
+    }
+
+    if (perfil !== 'contratante') {
+        return res.status(403).json({ sucesso: false, erro: 'Apenas contratantes podem avaliar este serviço.' });
+    }
+
+    const notaRecebida = req.body?.nota;
+    const nota = typeof notaRecebida === 'number'
+        ? notaRecebida
+        : typeof notaRecebida === 'string' && /^[1-5]$/.test(notaRecebida)
+            ? Number(notaRecebida)
+            : NaN;
+
+    if (!Number.isInteger(nota) || nota < 1 || nota > 5) {
+        return res.status(400).json({ sucesso: false, erro: 'A nota deve ser um número inteiro de 1 a 5.' });
+    }
+
+    const comentarioRecebido = req.body?.comentario;
+    if (comentarioRecebido !== undefined && comentarioRecebido !== null && typeof comentarioRecebido !== 'string') {
+        return res.status(400).json({ sucesso: false, erro: 'O comentário deve ser um texto de até 500 caracteres.' });
+    }
+
+    const comentario = comentarioRecebido ?? null;
+    if (comentario !== null && Array.from(comentario).length > 500) {
+        return res.status(400).json({ sucesso: false, erro: 'O comentário deve ter no máximo 500 caracteres.' });
+    }
+
+    try {
+        const resultadoBico = await db.query(
+            'SELECT contratante_id, trabalhador_id, status FROM bicos WHERE id = ?',
+            [bicoIdNum]
+        );
+        const bico = obterPrimeiraLinha(resultadoBico);
+
+        if (!bico) {
+            return res.status(404).json({ sucesso: false, erro: 'Bico não encontrado.' });
+        }
+
+        if (Number(bico.contratante_id) !== usuarioIdNum) {
+            return res.status(403).json({ sucesso: false, erro: 'Você não tem autorização para avaliar este bico.' });
+        }
+
+        if (bico.status !== 'Finalizado') {
+            return res.status(409).json({ sucesso: false, erro: 'Somente bicos finalizados podem ser avaliados.' });
+        }
+
+        const trabalhadorIdNum = Number(bico.trabalhador_id);
+        if (!Number.isInteger(trabalhadorIdNum) || trabalhadorIdNum <= 0) {
+            return res.status(409).json({ sucesso: false, erro: 'Este bico não possui um trabalhador associado.' });
+        }
+
+        await db.query(
+            `INSERT INTO avaliacoes (bico_id, avaliador_id, avaliado_id, nota, comentario)
+             VALUES (?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE
+                avaliador_id = VALUES(avaliador_id),
+                avaliado_id = VALUES(avaliado_id),
+                nota = VALUES(nota),
+                comentario = VALUES(comentario)`,
+            [bicoIdNum, usuarioIdNum, trabalhadorIdNum, nota, comentario]
+        );
+
+        return res.json({ sucesso: true, mensagem: 'Avaliação salva com sucesso.' });
+    } catch (erro) {
+        if (erro?.code === 'ER_DUP_ENTRY' || erro?.errno === 1062) {
+            return res.status(409).json({ sucesso: false, erro: 'Não foi possível salvar a avaliação devido a um conflito. Tente novamente.' });
+        }
+
+        console.error('ERRO AO SALVAR AVALIAÇÃO DO BICO:', erro);
+        return res.status(500).json({ sucesso: false, erro: 'Erro interno ao salvar a avaliação.' });
+    }
+};
+
 // 4. Exibir o histórico apenas para o contratante do bico ou seu trabalhador.
 export const criarExibidorHistoricoCandidatura = (banco) => async (req, res) => {
     const { candidatura_id } = req.params || {};
@@ -723,4 +813,3 @@ export const cancelarCandidatura = async (req, res) => {
         connection.release();
     }
 };
-

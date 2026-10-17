@@ -60,3 +60,67 @@ export const criarAtualizadorSenha = (banco, hasher = bcrypt) => async (req, res
     }
 };
 export const atualizarSenha = criarAtualizadorSenha(pool, bcrypt);
+
+export const exibirPerfilPublicoTrabalhador = async (req, res) => {
+    const idRecebido = req.params?.id;
+    const trabalhadorId = typeof idRecebido === 'string' && /^\d+$/.test(idRecebido)
+        ? Number(idRecebido)
+        : NaN;
+
+    if (!Number.isSafeInteger(trabalhadorId) || trabalhadorId <= 0 || trabalhadorId > 2147483647) {
+        return res.status(400).send('Identificador de trabalhador inválido.');
+    }
+
+    try {
+        const trabalhadores = await pool.query(
+            `SELECT id, nome
+             FROM usuarios
+             WHERE id = ? AND LOWER(tipo_perfil) = 'trabalhador'
+             LIMIT 1`,
+            [trabalhadorId]
+        );
+        const trabalhador = trabalhadores[0];
+
+        if (!trabalhador) {
+            return res.status(404).send('Perfil de trabalhador não encontrado.');
+        }
+
+        const estatisticas = await pool.query(
+            `SELECT COUNT(*) AS quantidade, AVG(a.nota) AS media
+             FROM avaliacoes a
+             JOIN usuarios contratante
+               ON contratante.id = a.avaliador_id
+              AND LOWER(contratante.tipo_perfil) = 'contratante'
+             WHERE a.avaliado_id = ?`,
+            [trabalhadorId]
+        );
+        const resumo = estatisticas[0] || {};
+
+        const avaliacoes = await pool.query(
+            `SELECT a.nota,
+                    a.comentario,
+                    contratante.nome AS contratante_nome,
+                    DATE_FORMAT(a.data_atualizacao, '%d/%m/%Y') AS data_avaliacao
+             FROM avaliacoes a
+             JOIN usuarios contratante
+               ON contratante.id = a.avaliador_id
+              AND LOWER(contratante.tipo_perfil) = 'contratante'
+             WHERE a.avaliado_id = ?
+             ORDER BY a.data_atualizacao DESC, a.bico_id DESC`,
+            [trabalhadorId]
+        );
+
+        return res.render('perfilPublicoTrabalhador', {
+            trabalhador,
+            mediaAvaliacoes: resumo.media === null ? 0 : Number(resumo.media),
+            quantidadeAvaliacoes: Number(resumo.quantidade || 0),
+            avaliacoes: avaliacoes.map((avaliacao) => ({
+                ...avaliacao,
+                nota: Number(avaliacao.nota)
+            }))
+        });
+    } catch (erro) {
+        console.error('Erro ao exibir perfil público do trabalhador:', erro?.code || 'erro inesperado');
+        return res.status(500).send('Erro ao carregar o perfil público do trabalhador.');
+    }
+};

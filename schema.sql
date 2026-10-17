@@ -29,6 +29,28 @@ CREATE TABLE IF NOT EXISTS bicos (
     CONSTRAINT fk_bicos_trabalhador FOREIGN KEY (trabalhador_id) REFERENCES usuarios(id)
 );
 
+-- Tabela de Avaliações
+CREATE TABLE IF NOT EXISTS avaliacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bico_id INT NOT NULL,
+    avaliador_id INT NOT NULL,
+    avaliado_id INT NOT NULL,
+    nota TINYINT NOT NULL,
+    comentario VARCHAR(500) DEFAULT NULL,
+    data_atualizacao TIMESTAMP NOT NULL
+        DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT uk_avaliacoes_bico UNIQUE (bico_id),
+    CONSTRAINT chk_avaliacoes_nota CHECK (nota BETWEEN 1 AND 5),
+    CONSTRAINT fk_avaliacoes_bico
+        FOREIGN KEY (bico_id) REFERENCES bicos(id),
+    CONSTRAINT fk_avaliacoes_avaliador
+        FOREIGN KEY (avaliador_id) REFERENCES usuarios(id),
+    CONSTRAINT fk_avaliacoes_avaliado
+        FOREIGN KEY (avaliado_id) REFERENCES usuarios(id)
+) ENGINE=InnoDB;
+
 -- Eventos de status e outras ações relacionadas aos bicos
 CREATE TABLE IF NOT EXISTS historico_eventos_bicos (
     id INT AUTO_INCREMENT PRIMARY KEY,

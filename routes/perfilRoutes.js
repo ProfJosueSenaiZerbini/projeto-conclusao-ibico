@@ -3,10 +3,14 @@ import { requireAuth } from '../middleware/authMiddleware.js';
 import { 
     exibirPerfil, 
     atualizarPerfil, 
-    atualizarSenha
+    atualizarSenha,
+    exibirPerfilPublicoTrabalhador
 } from '../controllers/perfilController.js';
 
 const router = express.Router();
+
+// Perfil público: exige autenticação e retorna somente dados públicos do trabalhador.
+router.get('/publico/:id', requireAuth, exibirPerfilPublicoTrabalhador);
 
 // Como esta rota já é montada com /perfil no app.js:
 // GET /perfil -> Exibe a página do perfil
