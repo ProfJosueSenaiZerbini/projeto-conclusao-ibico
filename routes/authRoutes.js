@@ -18,11 +18,31 @@ const renderHomeTrabalhador = async (req, res) => {
     }
 
     try {
-        const vagas = await pool.query("SELECT * FROM bicos WHERE status = 'Aberto'");
+        const ordenacoes = {
+            recentes: 'id DESC',
+            maior_preco: 'CAST(valor AS DECIMAL(10, 2)) DESC, id DESC',
+            menor_preco: 'CAST(valor AS DECIMAL(10, 2)) ASC, id DESC'
+        };
+        const ordem = Object.hasOwn(ordenacoes, req.query.ordem)
+            ? req.query.ordem
+            : 'recentes';
+        const busca = typeof req.query.busca === 'string'
+            ? req.query.busca.trim().slice(0, 100)
+            : '';
+
+        const vagas = await pool.query(
+            `SELECT * FROM bicos
+             WHERE status = 'Aberto'
+               AND (titulo LIKE ? OR descricao LIKE ? OR bairro LIKE ?)
+             ORDER BY ${ordenacoes[ordem]}`,
+            [`%${busca}%`, `%${busca}%`, `%${busca}%`]
+        );
 
         return res.render('homeTrabalhador', {
             usuario: req.session.usuario,
-            vagas
+            vagas,
+            busca,
+            ordem
         });
     } catch (erro) {
         console.error('Erro ao buscar bicos no banco:', erro);

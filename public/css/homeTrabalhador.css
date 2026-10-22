@@ -40,7 +40,21 @@
     max-width:680px;
     flex:1;
   }
+<<<<<<< Updated upstream
   .search-wrap svg{
+=======
+  .search-form{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .search-input-wrap{
+    position:relative;
+    flex:1;
+    min-width:0;
+  }
+  .search-input-wrap svg{
+>>>>>>> Stashed changes
     position:absolute;
     left:16px; top:50%;
     transform:translateY(-50%);
@@ -64,9 +78,9 @@
 
   .sort-wrap{
     display:flex;
-    flex-direction:column;
-    align-items:flex-end;
-    gap:6px;
+    flex-direction:row;
+    align-items:center;
+    gap:8px;
   }
   .sort-label{ font-size:13px; color:var(--muted); }
   select.sort-select{
@@ -82,6 +96,18 @@
   select.sort-select:hover{
     border-color: var(--teal-light);
   }
+  .filter-action{
+    padding:10px 14px;
+    border:0;
+    border-radius:8px;
+    background:var(--teal);
+    color:#fff;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .filter-action:hover{ background:#0a2f2b; }
   select.sort-select:focus{
     outline:none;
     box-shadow: 0 0 0 3px rgba(79,157,144,0.18);
@@ -95,6 +121,9 @@
   }
   @media (max-width: 800px){
     .grid{ grid-template-columns: 1fr; }
+    .top-row{ align-items:stretch; flex-direction:column; gap:14px; }
+    .search-wrap{ max-width:none; }
+    .sort-wrap{ justify-content:flex-start; flex-wrap:wrap; }
   }
 
   .card{

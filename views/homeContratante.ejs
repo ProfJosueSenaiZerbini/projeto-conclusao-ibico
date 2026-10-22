@@ -9,8 +9,13 @@
 </head>
 <body>
 
+<<<<<<< Updated upstream
   <%- include('partials/headerContratante') %>
   
+=======
+  <%- include('Partials/headerContratante') %>
+
+>>>>>>> Stashed changes
   <div class="dashboard-container">
 
     <aside class="sidebar">
@@ -26,7 +31,7 @@
     </aside>
 
     <main class="main-content">
-      
+
       <section class="welcome-header">
         <h1>Olá, <%= usuario.nome %></h1>
         <p>Veja como estão os seus bicos e candidatos hoje.</p>
@@ -66,12 +71,31 @@
           <a href="/bicos" class="hint-link">Ver todas as vagas →</a>
         </div>
 
+        <div class="filter-bar" style="margin-bottom: 20px; display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <form method="GET" action="/homeContratante" style="display: flex; align-items: center; gap: 8px;">
+            <input type="hidden" name="ordenar" value="<%= ordenacao %>">
+            <input id="buscarBico" type="search" name="q" value="<%= busca %>" placeholder="Pesquisar bicos..." aria-label="Pesquisar bicos" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px;">
+            <button type="submit" style="padding: 8px 14px; border: 0; border-radius: 6px; background: #0d9488; color: #fff; font-weight: 600; cursor: pointer;">Pesquisar</button>
+          </form>
+
+          <form method="GET" action="/homeContratante" style="display: flex; align-items: center; gap: 8px;">
+            <input type="hidden" name="q" value="<%= busca %>">
+            <label for="ordenarSelect" style="font-size: 0.9rem; color: #64748b; font-weight: 500;">Ordenar por:</label>
+            <select id="ordenarSelect" name="ordenar" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; font-size: 0.9rem; cursor: pointer;">
+              <option value="recente" <%= ordenacao === 'recente' ? 'selected' : '' %>>Mais recentes</option>
+              <option value="menor_valor" <%= ordenacao === 'menor_valor' ? 'selected' : '' %>>Menor valor</option>
+              <option value="maior_valor" <%= ordenacao === 'maior_valor' ? 'selected' : '' %>>Maior valor</option>
+            </select>
+            <button type="submit" style="padding: 8px 14px; border: 0; border-radius: 6px; background: #0d9488; color: #fff; font-weight: 600; cursor: pointer;">Buscar filtro</button>
+          </form>
+        </div>
+
         <div class="vagas-list">
-          
+
           <% if (bicos && bicos.length > 0) { %>
             <% bicos.forEach(bico => { %>
-              
-              <div class="vaga-card">
+
+              <div class="vaga-card" data-valor="<%= Number(bico.valor || 0) %>" data-id="<%= bico.id %>">
                 <div class="vaga-info">
                   <div class="vaga-badges">
                     <% if (bico.status === 'Aberto') { %>
@@ -81,16 +105,23 @@
                     <% } else { %>
                       <span class="badge badge-default"><%= bico.status.toUpperCase() %></span>
                     <% } %>
-                    
-                    <span class="vaga-date">📍 <%= bico.bairro %> • R$ <%= Number(bico.valor || 0).toFixed(2) %></span>
+
+                    <span class="vaga-date" style="margin-left: 8px;">📍 <%= bico.bairro %></span>
+                    <span class="vaga-price" style="font-weight: 600; color: #0f172a; margin-left: 8px;">R$ <%= Number(bico.valor || 0).toFixed(2) %></span>
                   </div>
-                  
+
                   <h3 class="vaga-title"><%= bico.titulo %></h3>
                   <p class="vaga-location"><%= bico.descricao %></p>
                 </div>
 
                 <div class="vaga-actions">
+<<<<<<< Updated upstream
                   <a href="#" class="btn btn-teal">Gerenciar Vaga</a>
+=======
+                 <a href="/bicos/<%= bico.id %>/gerenciar" class="btn-primary"
+                  style="padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; text-decoration: none;">Ver detalhes
+                 </a>
+>>>>>>> Stashed changes
                 </div>
               </div>
 
@@ -107,8 +138,13 @@
 
     </main>
   </div>
+<<<<<<< Updated upstream
   
 <%- include('partials/footer') %>
+=======
+
+  <%- include('Partials/footer') %>
+>>>>>>> Stashed changes
 
 </body>
 </html>

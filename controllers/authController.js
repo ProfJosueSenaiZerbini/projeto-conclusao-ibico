@@ -108,15 +108,31 @@ export const homeContratante = async (req, res) => {
             [contratanteId]
         );
         const usuario = usuarios[0];
+        const busca = typeof req.query.q === 'string' ? req.query.q.trim().slice(0, 100) : '';
+
+        const ordenacoes = {
+            recente: 'id DESC',
+            menor_valor: 'CAST(valor AS DECIMAL(10, 2)) ASC, id DESC',
+            maior_valor: 'CAST(valor AS DECIMAL(10, 2)) DESC, id DESC'
+        };
+        const ordenacao = Object.hasOwn(ordenacoes, req.query.ordenar)
+            ? req.query.ordenar
+            : 'recente';
 
         const bicos = await pool.query(
-            'SELECT id, titulo, descricao, valor, bairro, status FROM bicos WHERE contratante_id = ? ORDER BY id DESC',
-            [contratanteId]
+            `SELECT id, titulo, descricao, valor, bairro, status
+             FROM bicos
+             WHERE contratante_id = ?
+               AND (titulo LIKE ? OR descricao LIKE ? OR bairro LIKE ?)
+             ORDER BY ${ordenacoes[ordenacao]}`,
+            [contratanteId, `%${busca}%`, `%${busca}%`, `%${busca}%`]
         );
 
         return res.render('homeContratante', {
             usuario,
-            bicos
+            bicos,
+            ordenacao,
+            busca
         });
     } catch (erro) {
         console.error('Erro ao carregar dashboard do contratante:', erro);
