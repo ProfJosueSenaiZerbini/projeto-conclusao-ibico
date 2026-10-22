@@ -759,57 +759,124 @@ export const exibirGerenciamentoBico = async (req, res) => {
     }
 };
 // Cancelar a candidatura do bico
-export const cancelarCandidatura = async (req, res) => {
-    const { bico_id } = req.body;
-    const trabalhador_id = req.session?.usuario?.id || req.session?.usuario?.id_usuario;
 
-    if (!trabalhador_id) {
+export const cancelarCandidatura = async (req, res) => {
+    const { bico_id } = req.body ?? {};
+
+    const trabalhadorId = req.session?.usuario?.id
+        ?? req.session?.usuario?.id_usuario;
+
+    const bicoIdNum =
+        typeof bico_id === 'number'
+            ? bico_id
+            : typeof bico_id === 'string' && bico_id.trim() !== ''
+                ? Number(bico_id)
+                : NaN;
+
+    const trabalhadorIdNum = Number(trabalhadorId);
+
+    // 1. Valida o ID do bico
+    if (!Number.isSafeInteger(bicoIdNum) || bicoIdNum <= 0) {
+        return res.status(400).send('Identificador de bico inválido.');
+    }
+
+    // 2. Confere a identificação do trabalhador
+    if (!Number.isSafeInteger(trabalhadorIdNum) || trabalhadorIdNum <= 0) {
         return res.redirect('/login');
     }
 
-    const bicoIdNum = Number(bico_id);
-    const trabalhadorIdNum = Number(trabalhador_id);
-
+    let connection;
+    let transacaoAtiva = false;
 
     try {
-        const connection = await db.getConnection();
-        await connection.beginTransaction();
+        connection = await db.getConnection();
 
-        // 1. Busca a candidatura pendente atual
+        await connection.beginTransaction();
+        transacaoAtiva = true;
+
+        // 3. Busca somente a candidatura do próprio trabalhador
         const resCand = await connection.query(
-            'SELECT * FROM candidaturas WHERE bico_id = ? AND trabalhador_id = ? AND status = "Pendente"',
+            `SELECT id
+             FROM candidaturas
+             WHERE bico_id = ?
+               AND trabalhador_id = ?
+               AND status = 'Pendente'
+             FOR UPDATE`,
             [bicoIdNum, trabalhadorIdNum]
         );
 
-        const candidaturas = Array.isArray(resCand[0]) ? resCand[0] : resCand;
-        const cand = Array.isArray(candidaturas) ? candidaturas[0] : candidaturas;
+        const candidaturas = Array.isArray(resCand[0])
+            ? resCand[0]
+            : resCand;
 
-        if (!cand) {
+        const candidatura = candidaturas[0];
+
+        if (!candidatura) {
             await connection.rollback();
-            return res.status(400).send('Candidatura não encontrada ou não pode mais ser cancelada.');
+            transacaoAtiva = false;
+
+            return res.status(400).send(
+                'Candidatura não encontrada ou não pode mais ser cancelada.'
+            );
         }
 
-        // 2. Atualiza o status da candidatura para "Cancelado"
-        await connection.query(
-            'UPDATE candidaturas SET status = "Cancelado" WHERE id = ?',
-            [cand.id]
+        // 4. Cancela somente se continuar pendente
+        const resultado = await connection.query(
+            `UPDATE candidaturas
+             SET status = 'Cancelado'
+             WHERE id = ?
+               AND trabalhador_id = ?
+               AND status = 'Pendente'`,
+            [candidatura.id, trabalhadorIdNum]
         );
 
-        // 3. Registra no histórico de auditoria
-        await connection.query(
-            `INSERT INTO historico_candidaturas (candidatura_id, status_anterior, status_novo, alterado_por, observacao)
-             VALUES (?, 'Pendente', 'Cancelado', ?, 'Candidatura cancelada pelo próprio trabalhador')`,
-            [cand.id, trabalhadorIdNum]
-        );
+        if (resultado.affectedRows !== 1) {
+            await connection.rollback();
+            transacaoAtiva = false;
 
+            return res.status(409).send(
+                'A candidatura mudou de estado. Atualize a página e tente novamente.'
+            );
+        }
+
+        // 5. Registra a alteração no histórico
+
+        await connection.query(
+            `INSERT INTO historico_candidaturas
+                (candidatura_id, status_anterior, status_novo,
+                 alterado_por, observacao)
+             VALUES (?, 'Pendente', 'Cancelado', ?, ?)`,
+            [
+                candidatura.id,
+                trabalhadorIdNum,
+                'Candidatura cancelada pelo próprio trabalhador'
+            ]
+        );
+        // 6. Confirma as duas alterações
         await connection.commit();
+        transacaoAtiva = false;
+
         return res.redirect(`/bicos/${bicoIdNum}`);
 
     } catch (erro) {
-        await connection.rollback();
-        console.error('❌ ERRO AO CANCELAR CANDIDATURA:', erro);
-        return res.status(500).send('Erro interno ao cancelar candidatura.');
+        if (connection && transacaoAtiva) {
+            try {
+                await connection.rollback();
+            } catch (erroRollback) {
+                console.error(
+                    'Erro ao reverter cancelamento da candidatura:',
+                    erroRollback
+                );
+            }
+        }
+
+        console.error('Erro ao cancelar candidatura:', erro);
+
+        return res.status(500).send(
+            'Erro interno ao cancelar candidatura.'
+        );
     } finally {
-        connection.release();
+        connection?.release();
     }
 };
+

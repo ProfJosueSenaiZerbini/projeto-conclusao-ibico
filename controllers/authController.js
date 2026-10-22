@@ -10,7 +10,7 @@ import {
 
 export const criarCadastradorUsuario = (banco, hasher = bcrypt) => async (req, res) => {
     const body = req.body || {};
-    const cpfsDeTeste = ['000.000.000-00', '999.999.999-99'];
+    const cpfsDeTeste = ['000.000.000-00', '999.999.999-99','888.888.888.88','777.777.777.77','666.666.666.66'];
 
     const mostrarErro = (mensagem, status = 400) => {
         return res.status(status).render('cadastrar', {
@@ -257,13 +257,37 @@ export const exibirHistoricoTrabalhador = async (req, res) => {
             ORDER BY c.criado_em DESC
         `;
 
+        const queryCancelados = `
+            SELECT
+                c.id AS candidatura_id,
+                b.id AS bico_id,
+                b.titulo,
+                b.descricao,
+                b.valor,
+                DATE_FORMAT(b.data_servico, '%d/%m/%Y') AS data_servico_formatada,
+                c.status AS candidatura_status,
+                h.status_anterior,
+                h.status_novo,
+                DATE_FORMAT(h.data_alteracao, '%d/%m/%Y %H:%i') AS data_alteracao_formatada,
+                h.observacao
+            FROM candidaturas c
+            JOIN bicos b ON b.id = c.bico_id
+            JOIN historico_candidaturas h ON h.candidatura_id = c.id
+            WHERE c.trabalhador_id = ?
+              AND c.status = 'Cancelado'
+              AND h.status_novo = 'Cancelado'
+            ORDER BY h.data_alteracao DESC
+        `;
+
         // Alterado de "db.query" para "pool.query"
         const bicosAceitos = await pool.query(queryAceitos, [trabalhador_id]);
         const bicosPendentes = await pool.query(queryPendentes, [trabalhador_id]);
+        const bicosCancelados = await pool.query(queryCancelados, [trabalhador_id]);
 
         return res.render('historicoTrabalhador', {
             aceitos: bicosAceitos,
             pendentes: bicosPendentes,
+            cancelados: bicosCancelados,
             usuario: req.session.usuario
         });
 

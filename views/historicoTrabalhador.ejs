@@ -27,6 +27,9 @@
                 <button class="tab" onclick="trocarAba(event, 'pendentes')">
                     Bicos Pendentes (<%= pendentes.length %>)
                 </button>
+                <button class="tab" onclick="trocarAba(event, 'cancelados')">
+                    Cancelados (<%= cancelados.length %>)
+                </button>
             </div>
 
             <div class="tab-content">
@@ -96,6 +99,32 @@
                                     <% }); %>
                             </ul>
                             <% } %>
+                </div>
+
+                <div class="tab-panel" id="cancelados" style="display: none;">
+                    <% if (cancelados.length===0) { %>
+                        <p style="color: #666; margin-top: 20px;">Voce nao possui candidaturas canceladas.</p>
+                    <% } else { %>
+                        <ul class="bicos-list">
+                            <% cancelados.forEach(cancelamento=> { %>
+                                <li class="bico-card">
+                                    <div class="bico-card__header">
+                                        <h3><%= cancelamento.titulo %></h3>
+                                        <span class="badge badge--warning"><%= cancelamento.status_novo %></span>
+                                    </div>
+                                    <p class="bico-card__desc"><%= cancelamento.descricao %></p>
+                                    <div class="bico-card__footer">
+                                        <span><strong>Valor:</strong> R$ <%= Number(cancelamento.valor).toFixed(2).replace('.', ',') %></span>
+                                        <span><strong>Data do bico:</strong> <%= cancelamento.data_servico_formatada %></span>
+                                    </div>
+                                    <p><strong>Status anterior:</strong> <%= cancelamento.status_anterior || '-' %></p>
+                                    <p><strong>Status novo:</strong> <%= cancelamento.status_novo %></p>
+                                    <p><strong>Data da alteracao:</strong> <%= cancelamento.data_alteracao_formatada %></p>
+                                    <p><strong>Observacao:</strong> <%= cancelamento.observacao || 'Sem observacao.' %></p>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    <% } %>
                 </div>
             </div>
         </main>
