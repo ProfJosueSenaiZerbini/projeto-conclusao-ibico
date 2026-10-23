@@ -11,7 +11,7 @@
 <body class="theme-contratante">
 
   <div class="page">
-    <div class="auth-split" style="flex:1;">
+    <div class="auth-split">
 
       <!-- PAINEL ESQUERDO: VISUAL COM IMAGEM -->
       <div class="auth-split-visual">
@@ -23,17 +23,17 @@
         <div class="visual-photo">
           <!-- ESPAÇO RESERVADO PARA A SUA IMAGEM: Substitua o 'src' abaixo quando quiser -->
           <img id="visualImage" src="https://www.coisasdaroca.com/wp-content/uploads/2017/05/v-27-e1496090254861.jpg"
-            alt="Ilustração Ibico" height="400px" width="20px">
+            alt="Ilustração Ibico">
         </div>
       </div>
 
       <!-- PAINEL DIREITO: FORMULÁRIOS -->
       <div class="auth-split-form">
-        <div class="auth-box" style="max-width:460px; width: 100%;">
+        <div class="auth-box">
 
-          <a href="/login" class="brand teal" style="margin-bottom:18px;"><span class="brand-dot"></span>Ibico</a>
-          <h1 class="auth-title" style="font-size:22px;">Criar Nova Conta</h1>
-          <p class="auth-sub" style="margin-bottom:6px;">Preencha seus dados para começar a usar o Ibico</p>
+          <a href="/login" class="brand teal"><span class="brand-dot"></span>Ibico</a>
+          <h1 class="auth-title" id="signupTitle">Criar sua conta</h1>
+          <p class="auth-sub" id="signupSubtitle">Escolha seu perfil e comece a usar o iBico.</p>
 
           <% if (erro) { %>
             <div class="erro-passarinho-cadastro">
@@ -48,8 +48,8 @@
             </div>
             <% } %>
 
-              <label style="margin-top:16px;">Eu quero...</label>
-              <div class="role-toggle" id="cadastroRoleToggle" style="margin-top:0;">
+              <label class="role-label">Eu quero...</label>
+              <div class="role-toggle" id="cadastroRoleToggle">
                 <div class="role-card active" data-role="contratante" id="cardContratante">
                   <div class="role-icon">💼</div>
                   <span>Quero Contratar</span>
@@ -79,7 +79,7 @@
                     </div>
                   </div>
 
-                  <div class="field" style="margin-bottom: 14px;">
+                  <div class="field cpf-field">
                     <label for="cpf">CPF</label>
                     <input class="input" type="text" id="cpf" name="cpf" placeholder="000.000.000-00" maxlength="14"
                       value="<%= dados?.cpf || '' %>" required>
@@ -87,7 +87,7 @@
                 </div>
 
                 <!-- SEÇÃO DE CAMPOS EXCLUSIVOS DO TRABALHADOR (Inicialmente oculta) -->
-                <div id="fieldsTrabalhador" style="display: none;">
+                <div id="fieldsTrabalhador">
                   <div class="input-row">
                     <div class="field">
 
@@ -105,7 +105,13 @@
                     <div class="input-with-icon">
                       <input class="input" type="password" id="cSenha" name="senha" placeholder="••••••••" required
                         minlength="6" maxlength="72">
-                      <button type="button" class="input-icon-btn" data-toggle-password="cSenha">👁️</button>
+                      <button type="button" class="input-icon-btn" data-toggle-password="cSenha"
+                        data-toggle-label="senha" aria-label="Mostrar senha" aria-pressed="false">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                          <path
+                            d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
                   <div class="field">
@@ -113,18 +119,25 @@
                     <div class="input-with-icon">
                       <input class="input" type="password" id="cConfirma" name="confirmarSenha" placeholder="••••••••"
                         required minlength="6" maxlength="72">
-                      <button type="button" class="input-icon-btn" data-toggle-password="cConfirma">👁️</button>
+                      <button type="button" class="input-icon-btn" data-toggle-password="cConfirma"
+                        data-toggle-label="confirmação de senha" aria-label="Mostrar confirmação de senha"
+                        aria-pressed="false">
+                        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                          <path
+                            d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
                 </div>
 
-                <div class="checkbox-row" style="margin-bottom:8px;">
+                <div class="checkbox-row terms-row">
                   <input type="checkbox" id="termos" name="termos" required>
                   <label for="termos">Li e aceito os <a href="#" class="hint-link">Termos de Uso</a> e a <a href="#"
                       class="hint-link">Política de Privacidade</a>.</label>
                 </div>
 
-                <div class="checkbox-row" style="margin-bottom:20px;">
+                <div class="checkbox-row age-row">
                   <input type="checkbox" id="idade" name="maiorIdade" value="true" required>
                   <label for="idade">Confirmo que possuo 18 anos ou mais.</label>
                 </div>
