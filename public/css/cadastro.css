@@ -214,41 +214,6 @@ body {
   transform: scale(0.92);
 }
 
-.mascot-node {
-  position: absolute;
-  z-index: 1;
-  width: clamp(84px, 8vw, 112px);
-  height: auto;
-  max-height: 150px;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 12px rgba(15, 23, 42, 0.16));
-  transition: opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease;
-}
-
-.mascot-araponga {
-  top: 37%;
-  left: calc(50% - 438px);
-  transform: rotate(-5deg) scale(0.92);
-}
-
-.mascot-tie {
-  top: 49%;
-  right: calc(50% - 438px);
-  transform: rotate(5deg) scale(0.92);
-}
-
-.theme-contratante .mascot-araponga,
-.theme-trabalhador .mascot-tie {
-  opacity: 1;
-  transform: translateY(-4px) scale(1);
-}
-
-.theme-contratante .mascot-tie,
-.theme-trabalhador .mascot-araponga {
-  opacity: 0.42;
-  transform: scale(0.9);
-}
-
 .auth-split-form {
   position: relative;
   z-index: 1;
@@ -600,10 +565,6 @@ input:focus-visible {
 @media (max-width: 1050px) {
   .auth-box {
     padding: 30px;
-  }
-
-  .mascot-node {
-    display: none;
   }
 
   .profile-person {
