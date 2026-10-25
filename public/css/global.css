@@ -184,6 +184,85 @@ body {
   border-color: var(--teal);
 }
 
+@media (max-width: 1100px) {
+  .topbar--contratante {
+    padding-inline: 20px;
+  }
+
+  .topbar--contratante .topbar-left {
+    gap: 16px;
+  }
+
+  .topbar--contratante .topbar-nav {
+    gap: 8px;
+  }
+
+  .topbar--contratante .topbar-right {
+    gap: 10px;
+  }
+
+  .topbar--contratante .topbar-nav .nav-link {
+    font-size: 14px;
+    padding-inline: 2px;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbar--contratante {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .topbar--contratante .topbar-left {
+    min-width: 0;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+
+  .topbar--contratante .topbar-nav {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px 8px;
+  }
+
+  .topbar--contratante .topbar-nav .nav-link {
+    padding: 6px 2px 8px;
+  }
+
+  .topbar--contratante .topbar-right {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 12px;
+  }
+
+  .topbar--contratante .saldo-badge {
+    justify-self: start;
+  }
+
+  .topbar--contratante .user-profile {
+    min-width: 0;
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .topbar--contratante .user-profile > a {
+    min-width: 0;
+  }
+
+  .topbar--contratante .user-profile > a > span {
+    overflow-wrap: anywhere;
+  }
+
+  .topbar--contratante .topbar-right > form {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+}
+
 
 /* =========================================================
    HEADER / NAVBAR (PARTIAL PADRÃO)

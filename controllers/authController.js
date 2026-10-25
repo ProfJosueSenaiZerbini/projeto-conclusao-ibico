@@ -207,10 +207,24 @@ export const homeContratante = async (req, res) => {
             'SELECT id, titulo, descricao, valor, bairro, status FROM bicos WHERE contratante_id = ? ORDER BY id DESC',
             [contratanteId]
         );
+        const bicosAtivos = bicos.filter(
+            bico => bico.status === 'Aberto' || bico.status === 'Em andamento'
+        );
+
+        const resultadoCandidaturas = await pool.query(
+            `SELECT COUNT(*) AS total
+             FROM candidaturas c
+             JOIN bicos b ON b.id = c.bico_id
+             WHERE b.contratante_id = ? AND c.status = 'Pendente'`,
+            [contratanteId]
+        );
+        const candidaturasPendentes = Number(resultadoCandidaturas[0]?.total ?? 0);
 
         return res.render('homeContratante', {
             usuario,
-            bicos
+            bicos,
+            bicosAtivos,
+            candidaturasPendentes
         });
     } catch (erro) {
         console.error('Erro ao carregar dashboard do contratante:', erro);
