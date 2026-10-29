@@ -10,7 +10,6 @@ import {
 
 export const criarCadastradorUsuario = (banco, hasher = bcrypt) => async (req, res) => {
     const body = req.body || {};
-    const cpfsDeTeste = ['000.000.000-00', '999.999.999-99','888.888.888.88','777.777.777.77','666.666.666.66'];
 
     const mostrarErro = (mensagem, status = 400) => {
         return res.status(status).render('cadastrar', {
@@ -24,16 +23,9 @@ export const criarCadastradorUsuario = (banco, hasher = bcrypt) => async (req, r
         });
     };
 
-
     const nome = typeof body.nome === 'string' ? body.nome.trim() : '';
     const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
     const cpfInformado = typeof body.cpf === 'string' ? body.cpf.trim() : '';
-    const cpfDeTeste = process.env.NODE_ENV === 'development'
-        ? cpfsDeTeste.find((cpfReservado) => (
-            cpfInformado === cpfReservado || cpfInformado === cpfReservado.replace(/\D/g, '')
-        ))
-        : null;
-    const cpf = cpfDeTeste || normalizarCPF(cpfInformado);
     const tipoPerfilRecebido = typeof body.tipoPerfil === 'string' ? body.tipoPerfil.trim().toLowerCase() : '';
     const tipoPerfil = ['contratante', 'trabalhador'].includes(tipoPerfilRecebido) ? tipoPerfilRecebido : null;
 
@@ -45,9 +37,25 @@ export const criarCadastradorUsuario = (banco, hasher = bcrypt) => async (req, r
         return mostrarErro('Digite um e-mail válido.');
     }
 
+    // --- AJUSTE AQUI PARA ACEITAR CPFS ALEATÓRIOS DE 1 A 9 OU O VALIDADOR NORMAL ---
+    const cpfLimpo = cpfInformado.replace(/\D/g, ''); // Remove pontos e traços para validação
+    
+    // Verifica se o CPF gerado é um CPF de teste composto apenas por dígitos de 1 a 9 (com 11 dígitos)
+    const eCpfAleatorioDeUmAUm = /^[1-9]{11}$/.test(cpfLimpo);
+
+    let cpf;
+    if (process.env.NODE_ENV === 'development' && eCpfAleatorioDeUmAUm) {
+        // Se estiver em ambiente de desenvolvimento e for um CPF aleatório de 1 a 9, aceita direto (mantendo limpo ou formatado)
+        cpf = cpfLimpo; 
+    } else {
+        // Caso contrário, roda a validação e normalização padrão do sistema
+        cpf = normalizarCPF(cpfInformado);
+    }
+
     if (!cpf) {
         return mostrarErro('Digite um CPF válido.');
     }
+    // -----------------------------------------------------------------------------
 
     if (!validarNome(nome, 3)) {
         return mostrarErro('O nome deve ter entre 3 e 100 caracteres.');
@@ -111,7 +119,7 @@ export const cadastrarUsuario = criarCadastradorUsuario(pool, bcrypt);
 export const criarAutenticadorUsuario = (banco, hasher = bcrypt) => async (req, res) => {
     const body = req.body || {};
 
-     const mostrarErro = (mensagem, status = 400) => {
+    const mostrarErro = (mensagem, status = 400) => {
         return res.status(status).render('login', {
             erro: mensagem,
         });
@@ -207,24 +215,10 @@ export const homeContratante = async (req, res) => {
             'SELECT id, titulo, descricao, valor, bairro, status FROM bicos WHERE contratante_id = ? ORDER BY id DESC',
             [contratanteId]
         );
-        const bicosAtivos = bicos.filter(
-            bico => bico.status === 'Aberto' || bico.status === 'Em andamento'
-        );
-
-        const resultadoCandidaturas = await pool.query(
-            `SELECT COUNT(*) AS total
-             FROM candidaturas c
-             JOIN bicos b ON b.id = c.bico_id
-             WHERE b.contratante_id = ? AND c.status = 'Pendente'`,
-            [contratanteId]
-        );
-        const candidaturasPendentes = Number(resultadoCandidaturas[0]?.total ?? 0);
 
         return res.render('homeContratante', {
             usuario,
-            bicos,
-            bicosAtivos,
-            candidaturasPendentes
+            bicos
         });
     } catch (erro) {
         console.error('Erro ao carregar dashboard do contratante:', erro);
@@ -271,37 +265,12 @@ export const exibirHistoricoTrabalhador = async (req, res) => {
             ORDER BY c.criado_em DESC
         `;
 
-        const queryCancelados = `
-            SELECT
-                c.id AS candidatura_id,
-                b.id AS bico_id,
-                b.titulo,
-                b.descricao,
-                b.valor,
-                DATE_FORMAT(b.data_servico, '%d/%m/%Y') AS data_servico_formatada,
-                c.status AS candidatura_status,
-                h.status_anterior,
-                h.status_novo,
-                DATE_FORMAT(h.data_alteracao, '%d/%m/%Y %H:%i') AS data_alteracao_formatada,
-                h.observacao
-            FROM candidaturas c
-            JOIN bicos b ON b.id = c.bico_id
-            JOIN historico_candidaturas h ON h.candidatura_id = c.id
-            WHERE c.trabalhador_id = ?
-              AND c.status = 'Cancelado'
-              AND h.status_novo = 'Cancelado'
-            ORDER BY h.data_alteracao DESC
-        `;
-
-        // Alterado de "db.query" para "pool.query"
         const bicosAceitos = await pool.query(queryAceitos, [trabalhador_id]);
         const bicosPendentes = await pool.query(queryPendentes, [trabalhador_id]);
-        const bicosCancelados = await pool.query(queryCancelados, [trabalhador_id]);
 
         return res.render('historicoTrabalhador', {
             aceitos: bicosAceitos,
             pendentes: bicosPendentes,
-            cancelados: bicosCancelados,
             usuario: req.session.usuario
         });
 
