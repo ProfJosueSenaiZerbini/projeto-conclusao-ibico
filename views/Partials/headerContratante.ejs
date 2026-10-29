@@ -16,7 +16,7 @@
   <div class="topbar-right">
     <div class="saldo-badge">
       <span class="icon">💳</span>
-      <strong>R$ <%= Number(usuario && usuario.saldo_simulado ? usuario.saldo_simulado : 0).toFixed(2) %></strong>
+      <strong><%= formatarMoedaBRL(usuario?.saldo_simulado) %></strong>
     </div>
 
     <div class="user-profile">

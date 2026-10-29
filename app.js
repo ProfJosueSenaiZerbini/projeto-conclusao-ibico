@@ -28,6 +28,13 @@ if (isProduction && process.env.TRUST_PROXY === '1') {
 // Configuração do express e EJS (Views)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.locals.formatarMoedaBRL = (valor) => {
+    const numero = Number(valor);
+    return new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    }).format(Number.isFinite(numero) ? numero : 0);
+};
 
 // Middlewares
 app.use(morgan('dev'));
