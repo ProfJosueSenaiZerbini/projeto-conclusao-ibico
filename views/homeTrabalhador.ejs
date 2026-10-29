@@ -1,108 +1,122 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ibico — Encontre sua próxima oportunidade</title>
+    <meta name="theme-color" content="#153d2e">
+    <title>Ibico | Oportunidades de trabalho</title>
     <link rel="stylesheet" href="/css/global.css">
     <link rel="stylesheet" href="/css/homeTrabalhador.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
-
     <%- include('Partials/headertrabalhador') %>
-
-    <main>
-        <div class="top-row">
-            <div class="search-wrap">
-                <h1 class="title">Encontre sua próxima oportunidade</h1>
-                <!-- Mantem a lupa presa ao campo, e nao ao bloco inteiro da busca. -->
-                <div class="search-input-wrap">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="7" />
-                        <path d="m21 21-4.3-4.3" />
-                    </svg>
-                    <input type="text" id="searchInput" placeholder="Qual serviço você procura hoje?">
+    <%
+        const listaVagas = Array.isArray(vagas) ? vagas : [];
+        const formatarValor = (valor) => Number(valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const bairros = [...new Set(listaVagas.map(v => (v.bairro || '').trim()).filter(Boolean))];
+        const totalBairros = bairros.length;
+        const maiorValor = listaVagas.reduce((maior, vaga) => Math.max(maior, Number(vaga.valor) || 0), 0);
+    %>
+    <main class="home">
+        <section class="hero">
+            <div class="hero__content">
+                <span class="eyebrow"><i class="fa-solid fa-bolt"></i> OPORTUNIDADES PARA VOCÊ</span>
+                <h1>Seu próximo bico começa aqui.</h1>
+                <p>Encontre serviços, compare pagamentos e veja as informações principais antes de abrir os detalhes da oportunidade.</p>
+                <div class="hero__stats">
+                    <div><strong><%= listaVagas.length %></strong><span>oportunidades cadastradas</span></div>
+                    <div class="hero__divider"></div>
+                    <div><strong><%= totalBairros %></strong><span>bairros com vagas</span></div>
+                    <div class="hero__divider"></div>
+                    <div><strong>R$ <%= formatarValor(maiorValor) %></strong><span>maior pagamento listado</span></div>
                 </div>
             </div>
-            <div class="sort-wrap">
-                <span class="sort-label">Ordenar por</span>
-                <select class="sort-select" id="sortSelect">
-                    <option>Mais Recentes</option>
-                    <option>Maior Preço</option>
-                    <option>Menor Preço</option>
-                    <option>Mais Próximos</option>
-                </select>
+            <div class="hero__illustration" aria-hidden="true">
+                <div class="illustration-circle"><i class="fa-solid fa-briefcase"></i></div>
+                <div class="floating-tag tag-one"><i class="fa-solid fa-circle-check"></i> Oportunidades disponíveis</div>
+                <div class="floating-tag tag-two"><i class="fa-solid fa-location-dot"></i> Consulte por bairro</div>
             </div>
-        </div>
+        </section>
 
-        <div class="grid" id="cardsGrid">
-            <% if (vagas.length===0) { %>
-                <p style="text-align: center; color: #666; grid-column: 1 / -1; padding: 2rem;">Nenhum bico disponível
-                    no momento. Tente novamente mais tarde!</p>
-                <% } else { %>
-                    <% vagas.forEach(vaga=> { %>
-                        <div class="card">
-                            <div class="card-head">
-                                <div>
-                                    <h3>
-                                        <%= vaga.titulo %>
-                                    </h3>
-                                    <div class="location">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                            stroke="currentColor" stroke-width="2">
-                                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                                            <circle cx="12" cy="10" r="3" />
-                                        </svg>
-                                        <%= vaga.bairro %>
-                                    </div>
+        <section class="search-panel" aria-labelledby="searchTitle">
+            <div class="section-heading">
+                <div><h2 id="searchTitle">Encontre uma oportunidade</h2><p>Pesquise pelo título ou bairro e organize os resultados como preferir.</p></div>
+                <span class="results-count" id="resultsCount"><%= listaVagas.length %> <%= listaVagas.length === 1 ? 'vaga' : 'vagas' %></span>
+            </div>
+            <div class="filters">
+                <label class="search-box"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    <input type="search" id="searchInput" placeholder="Ex.: garçom, limpeza, Centro..." aria-label="Pesquisar por serviço ou bairro" autocomplete="off">
+                </label>
+                <label class="filter-select"><span>ORDENAR RESULTADOS</span>
+                    <select id="sortSelect" aria-label="Ordenar oportunidades">
+                        <option value="recent">Mais recentes</option><option value="highest">Maior pagamento</option><option value="lowest">Menor pagamento</option><option value="az">Nome A–Z</option>
+                    </select>
+                </label>
+                <button type="button" class="filter-reset" id="clearFilters"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Limpar filtros</button>
+            </div>
+        </section>
+
+        <section class="opportunities" aria-labelledby="opportunitiesTitle">
+            <div class="section-heading opportunities__heading">
+                <div><span class="eyebrow">ENCONTRE SEU PRÓXIMO SERVIÇO</span><h2 id="opportunitiesTitle">Oportunidades disponíveis</h2><p>Confira pagamento, data, horário e bairro de cada serviço.</p></div>
+            </div>
+            <div class="opportunities__layout">
+                <div class="jobs-column">
+                    <div class="jobs-list" id="cardsGrid">
+                    <% if (listaVagas.length === 0) { %>
+                        <div class="empty-state"><i class="fa-solid fa-briefcase"></i><h3>Nenhum bico disponível por enquanto</h3><p>Quando novas oportunidades forem cadastradas, elas aparecerão aqui.</p></div>
+                    <% } else { %>
+                        <% listaVagas.forEach(function(vaga) { %>
+                        <article class="job-card" data-title="<%= vaga.titulo || '' %>" data-location="<%= vaga.bairro || '' %>" data-price="<%= Number(vaga.valor) || 0 %>" data-date="<%= vaga.data_servico ? new Date(vaga.data_servico).getTime() : 0 %>">
+                            <div class="job-card__top">
+                                <div class="job-icon"><i class="fa-solid fa-briefcase" aria-hidden="true"></i></div>
+                                <div class="job-card__main">
+                                    <span class="job-status"><span></span> OPORTUNIDADE CADASTRADA</span>
+                                    <h3><%= vaga.titulo || 'Serviço sem título' %></h3>
+                                    <div class="job-location"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><%= vaga.bairro || 'Bairro a confirmar' %></div>
                                 </div>
-                                <span class="price-pill">R$ <%= vaga.valor %></span>
+                                <div class="job-price"><span>Pagamento informado</span><strong>R$ <%= formatarValor(vaga.valor) %></strong></div>
                             </div>
-
-                            <div class="meta">
-                                <div class="meta-row">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" />
-                                        <path d="M16 2v4M8 2v4M3 10h18" />
-                                    </svg>
-                                    <%= vaga.data_servico.toLocaleDateString('pt-BR') %>
-                                </div>
-                                <div class="meta-row">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                        stroke-width="2">
-                                        <circle cx="12" cy="12" r="9" />
-                                        <path d="M12 7v5l3 3" />
-                                    </svg>
-                                    <%= vaga.horario %>
-                                </div>
+                            <div class="job-details">
+                                <span><i class="fa-regular fa-calendar" aria-hidden="true"></i><%= vaga.data_servico ? new Date(vaga.data_servico).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : 'Data a combinar' %></span>
+                                <span><i class="fa-regular fa-clock" aria-hidden="true"></i><%= vaga.horario || 'Horário a combinar' %></span>
+                                <span><i class="fa-solid fa-person-circle-check" aria-hidden="true"></i>Serviço presencial</span>
                             </div>
-
-                            <div class="vaga-actions">
-                                <!-- Botao destacado para levar aos dados completos da vaga. -->
-                                <a href="/bicos/<%= vaga.id %>" class="btn-details">
-                                    <i class="fas fa-eye"></i> Ver Detalhes
-                                </a>
+                            <div class="job-card__footer">
+                                <span class="job-note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Confira os requisitos e demais informações na página da vaga.</span>
+                                <a href="/bicos/<%= vaga.id %>" class="btn-details">Ver detalhes <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
                             </div>
-                        </div>
-                        <% }) %>
-                            <% } %>
-        </div>
+                        </article>
+                        <% }); %>
+                    <% } %>
+                    </div>
+                    <p class="no-results" id="noResults" hidden><strong>Nenhuma oportunidade encontrada.</strong><br>Experimente buscar por outro serviço ou bairro.</p>
+                    <% if (listaVagas.length > 6) { %><button type="button" class="load-more" id="loadMoreBtn">Carregar mais oportunidades <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button><% } %>
+                </div>
 
-        <div class="load-more-wrap">
-            <button class="btn-outline" id="loadMoreBtn">Carregar mais vagas</button>
-        </div>
+                <aside class="map-card" aria-labelledby="overviewTitle">
+                    <div class="map-card__header"><div><h3 id="overviewTitle"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Resumo das oportunidades</h3><p>Indicadores calculados com as vagas carregadas do sistema.</p></div><span class="map-badge">DADOS ATUAIS</span></div>
+                    <div class="insight-summary">
+                        <div class="insight-stat"><span>Vagas cadastradas</span><strong><%= listaVagas.length %></strong></div>
+                        <div class="insight-stat"><span>Bairros informados</span><strong><%= totalBairros %></strong></div>
+                    </div>
+                    <div class="area-list">
+                        <% if (bairros.length === 0) { %>
+                            <div class="area-row"><span class="area-name"><i class="fa-solid fa-location-dot"></i> Nenhum bairro informado</span><span class="area-count">0 vagas</span></div>
+                        <% } else { %>
+                            <% bairros.slice(0, 5).forEach(function(bairro) { const quantidade = listaVagas.filter(v => (v.bairro || '').trim() === bairro).length; %>
+                                <div class="area-row"><span class="area-name"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><%= bairro %></span><span class="area-count"><%= quantidade %> <%= quantidade === 1 ? 'vaga' : 'vagas' %></span></div>
+                            <% }); %>
+                        <% } %>
+                    </div>
+                    <div class="map-tip"><i class="fa-solid fa-lightbulb" aria-hidden="true"></i><p>Este resumo usa os dados reais enviados pela página. Para exibir um mapa geográfico verdadeiro, as vagas precisam ter latitude e longitude ou um endereço geocodificável.</p></div>
+                </aside>
+            </div>
+        </section>
     </main>
-
     <%- include('Partials/footer') %>
-
-    <div class="toast" id="toast"></div>
-
-    <script src="/js/homeTrabalhador.js"></script>
-
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/js/homeTrabalhador.js" defer></script>
 </body>
-
 </html>
