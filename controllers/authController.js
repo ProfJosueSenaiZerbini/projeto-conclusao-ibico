@@ -182,8 +182,6 @@ export const criarAutenticadorUsuario = (banco, hasher = bcrypt) => async (req, 
             saldo_simulado: usuario.saldo_simulado
         };
 
-        console.log(`✅ Login realizado! Usuário: ${usuario.nome} (ID: ${usuario.id}) | Perfil: ${usuario.tipo_perfil}`);
-
         if (usuario.tipo_perfil.toLowerCase() === 'trabalhador') {
             return res.redirect('/hometrabalhador');
         }

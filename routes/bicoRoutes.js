@@ -5,7 +5,6 @@ import {
     exibirDetalhesBico,
     exibirBicosAtivosContratante,
     candidatarAoBico,
-    listarCandidatosBico,
     atualizarStatusCandidatura,
     exibirHistoricoCandidatura,
     exibirGerenciamentoBico,
@@ -28,7 +27,7 @@ router.get('/novo', requireAuth, requireRole('contratante'), exibirFormularioPub
 router.post('/novo', requireAuth, requireRole('contratante'), cadastrarBico);
 
 // Candidaturas - Ações do Contratante
-router.get('/:bico_id/candidatos', requireAuth, requireRole('contratante'), listarCandidatosBico);
+router.get('/:id/candidatos', requireAuth, requireRole('contratante'), exibirGerenciamentoBico);
 router.post('/candidaturas/status', requireAuth, requireRole('contratante'), atualizarStatusCandidatura);
 router.post('/:id/finalizar', requireAuth, requireRole('contratante'), finalizarBico);
 router.post('/:id/avaliacao', requireAuth, requireRole('contratante'), salvarAvaliacaoBico);

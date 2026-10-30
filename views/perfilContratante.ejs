@@ -9,343 +9,189 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/global.css">
-    <link rel="stylesheet" href="/css/modalEditarPerfil.css">
-    <link rel="stylesheet" href="/css/perfilTrabalhador.css">
+    <link rel="stylesheet" href="/css/perfilContratante.css">
 </head>
 
 <body>
-    <% const habilidades=Array.isArray(usuario.habilidades) ? usuario.habilidades : ['Pequenos
-        Reparos', 'Montagem de Móveis' , 'Jardinagem' , 'Pintura Básica' ]; const
-        bicosConcluidos=usuario.bicos_concluidos !=null ? usuario.bicos_concluidos : 0; const
-        avaliacao=usuario.avaliacao_media !=null ? Number(usuario.avaliacao_media).toFixed(1) : '—' ; const
-        totalAvaliacoes=usuario.total_avaliacoes !=null ? usuario.total_avaliacoes : 0; const
-        taxaResposta=usuario.taxa_resposta !=null ? usuario.taxa_resposta : 100; const bio=usuario.bio
-        || 'Disponível para pequenos reparos, montagens e serviços gerais' ; const iniciais=usuario.nome ?
-        usuario.nome.slice(0, 2).toUpperCase() : 'TR' ; %>
+    <%
+        const iniciais = usuario.nome ? usuario.nome.slice(0, 2).toUpperCase() : 'CT';
+    %>
 
-        <%- include('partials/headerTrabalhador') %>
+    <%- include('Partials/headerContratante') %>
 
-            <main class="pt-page">
-                <!-- Topo da página -->
-                <div class="pt-topo">
-                    <div>
-                        <h1>Meu Perfil</h1>
-                        <p>Mantenha suas informações atualizadas para conseguir mais bicos.</p>
+    <main class="perfil-page">
+        <header class="perfil-topo">
+            <div>
+                <h1>Meu Perfil</h1>
+                <p>Gerencie seus dados e acompanhe sua conta de contratante.</p>
+            </div>
+            <div class="perfil-acoes">
+                <button type="button" class="btn btn-primary" id="btnEditarPerfil">Editar Perfil</button>
+                <a href="/homeContratante" class="btn btn-outline">Voltar</a>
+            </div>
+        </header>
+
+        <section class="perfil-card">
+            <div class="perfil-banner">
+                <div class="avatar">
+                    <span><%= iniciais %></span>
+                    <i class="avatar-status" title="Conta ativa"></i>
+                </div>
+                <div class="banner-info">
+                    <div class="banner-linha">
+                        <h2><%= usuario.nome %></h2>
+                        <span class="pill pill-role"><i class="dot"></i>Contratante</span>
+                        <span class="pill pill-verificado">Conta Ibico</span>
                     </div>
-                    <div class="pt-acoes">
-                        <button type="button" class="pt-btn pt-btn-primary" id="ptBtnEditar">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M12 20h9" />
-                                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                            </svg>
-                            Editar Perfil
-                        </button>
-                        <a href="/hometrabalhador" class="pt-btn pt-btn-outline">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M19 12H5" />
-                                <path d="m12 19-7-7 7-7" />
-                            </svg>
-                            Voltar
-                        </a>
+                    <p class="banner-bio">Encontre profissionais e acompanhe seus bicos publicados.</p>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-label">Tipo de conta</span>
+                    <strong class="stat-valor">Contratante</strong>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Saldo disponível</span>
+                    <strong class="stat-valor verde"><%= formatarMoedaBRL(usuario.saldo_simulado) %></strong>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Acesso à plataforma</span>
+                    <span class="badge-ativo">Ativo</span>
+                </div>
+            </div>
+
+            <div class="perfil-corpo">
+                <div class="secao-titulo">
+                    <h3>Dados da conta</h3>
+                    <span>Informações cadastradas no Ibico</span>
+                </div>
+
+                <div class="grid-dados">
+                    <div class="campo">
+                        <label>Nome completo</label>
+                        <div class="campo-linha">
+                            <span class="campo-valor"><%= usuario.nome %></span>
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label>E-mail</label>
+                        <div class="campo-linha">
+                            <span class="campo-valor mono"><%= usuario.email %></span>
+                            <span class="tag-verde">Cadastrado</span>
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label>CPF</label>
+                        <div class="campo-linha">
+                            <span class="campo-valor mono" id="cpfValor" data-cpf="<%= usuario.cpf %>"><%= usuario.cpf %></span>
+                            <button type="button" class="btn-link" id="btnToggleCpf" aria-pressed="false">
+                                <span id="cpfToggleTexto">Ocultar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="campo">
+                        <label>Idade</label>
+                        <div class="campo-linha">
+                            <span class="campo-valor"><%= usuario.idade %> anos</span>
+                        </div>
+                    </div>
+
+                    <div class="campo campo-largo">
+                        <label>Data de cadastro</label>
+                        <div class="campo-linha">
+                            <span class="campo-valor mono"><%= usuario.data_cadastro_formatada %></span>
+                            <span class="tag-neutra">Membro desde o cadastro</span>
+                        </div>
                     </div>
                 </div>
 
-                <section class="pt-card">
-                    <!-- Banner -->
-                    <div class="pt-banner">
-                        <div class="pt-avatar">
-                            <span>
-                                <%= iniciais %>
-                            </span>
-                            <i class="pt-avatar-status" title="Online"></i>
-                        </div>
-                        <div class="pt-banner-info">
-                            <div class="pt-banner-linha">
-                                <h2>
-                                    <%= usuario.nome %>
-                                </h2>
-                                <span class="pt-pill pt-pill-role"><i class="pt-dot"></i>
-                                    <%= usuario.tipo_perfil ? usuario.tipo_perfil.toLowerCase() : 'trabalhador' %>
-                                </span>
-                                <span class="pt-pill pt-pill-verificado">
-                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                                        <path
-                                            d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-1.2 14.4-3.7-3.7 1.4-1.4 2.3 2.3 4.6-4.6 1.4 1.4-6 6Z" />
-                                    </svg>
-                                    Perfil Verificado
-                                </span>
-                            </div>
-                            <p class="pt-banner-bio">
-                                <%= bio %>
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Estatísticas -->
-                    <div class="pt-stats">
-                        <div class="pt-stat">
-                            <span class="pt-stat-label">Bicos concluídos</span>
-                            <strong class="pt-stat-valor">
-                                <%= bicosConcluidos %>
-                            </strong>
-                        </div>
-                        <div class="pt-stat">
-                            <span class="pt-stat-label">Avaliação média</span>
-                            <strong class="pt-stat-valor">
-                                <%= avaliacao %> <span class="pt-estrela">★</span>
-                                    <small>(<%= totalAvaliacoes %> opiniões)</small>
-                            </strong>
-                        </div>
-                        <div class="pt-stat">
-                            <span class="pt-stat-label">Taxa de resposta</span>
-                            <strong class="pt-stat-valor pt-destaque">
-                                <%= taxaResposta %>%
-                            </strong>
-                        </div>
-                        <div class="pt-stat">
-                            <span class="pt-stat-label">Status na plataforma</span>
-                            <span class="pt-badge-ativo">Ativo &amp; Seguro</span>
-                        </div>
-                    </div>
-
-                    <div class="pt-corpo">
-                        <!-- Dados cadastrais -->
-                        <div class="pt-secao-titulo">
-                            <h3>
-                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="8" r="4" />
-                                    <path d="M4 21a8 8 0 0 1 16 0" />
-                                </svg>
-                                Dados Cadastrais
-                            </h3>
-                            <span>Informações privadas e do cadastro</span>
-                        </div>
-
-                        <div class="pt-grid">
-                            <div class="pt-campo">
-                                <label>Nome completo</label>
-                                <div class="pt-campo-linha">
-                                    <div class="pt-campo-valor">
-                                        <%= usuario.nome %>
-                                    </div>
-                                    <svg class="pt-campo-icone" viewBox="0 0 24 24" width="18" height="18" fill="none"
-                                        stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <circle cx="12" cy="10" r="3" />
-                                        <path d="M6.2 18.5a7 7 0 0 1 11.6 0" />
-                                    </svg>
-                                </div>
-                            </div>
-
-                            <div class="pt-campo">
-                                <label>Email</label>
-                                <div class="pt-campo-linha">
-                                    <div class="pt-campo-valor pt-mono">
-                                        <%= usuario.email %>
-                                    </div>
-                                    <span class="pt-tag-confirmado">Confirmado</span>
-                                </div>
-                            </div>
-
-                            <div class="pt-campo">
-                                <label>CPF</label>
-                                <div class="pt-campo-linha">
-                                    <div class="pt-campo-valor pt-mono" id="ptCpfValor" data-cpf="<%= usuario.cpf %>">
-                                        <%= usuario.cpf %>
-                                    </div>
-                                    <button type="button" class="pt-btn-link" id="ptBtnCpf" aria-pressed="false">
-                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" />
-                                            <circle cx="12" cy="12" r="3" />
-                                        </svg>
-                                        <span id="ptCpfTexto">Ocultar</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="pt-campo">
-                                <label>Idade</label>
-                                <div class="pt-campo-linha">
-                                    <div class="pt-campo-valor">
-                                        <%= usuario.idade %> anos
-                                    </div>
-                                    <span class="pt-campo-nota">
-                                        <%= Number(usuario.idade)>= 18 ? 'Maior de idade' : '' %>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="pt-campo pt-campo-largo">
-                                <label>Data de cadastro</label>
-                                <div class="pt-campo-linha">
-                                    <div class="pt-campo-valor pt-mono">
-                                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <rect x="3" y="4" width="18" height="18" rx="2" />
-                                            <path d="M16 2v4M8 2v4M3 10h18" />
-                                        </svg>
-                                        <%= usuario.data_cadastro_formatada %>
-                                    </div>
-                                    <span class="pt-tag-neutra">Membro recente</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Habilidades e Segurança -->
-                        <div class="pt-duas-colunas">
-                            <div>
-                                <h3 class="pt-sub-titulo">
-                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="3" y="7" width="18" height="13" rx="2" />
-                                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                        <path d="M3 13h18" />
-                                    </svg>
-                                    Habilidades e Especialidades
-                                </h3>
-                                <div class="pt-chips">
-                                    <% habilidades.forEach(function (h) { %>
-                                        <span class="pt-chip">
-                                            <%= h %>
-                                        </span>
-                                        <% }) %>
-                                            <button type="button" class="pt-chip pt-chip-add" id="ptBtnHabilidade">+
-                                                Adicionar mais</button>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h3 class="pt-sub-titulo">
-                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z" />
-                                        <path d="m9 12 2 2 4-4" />
-                                    </svg>
-                                    Segurança e Verificação
-                                </h3>
-                                <ul class="pt-lista-seguranca">
-                                    <li><span><i class="pt-dot"></i>Documento de Identidade
-                                            validado</span><b>Aprovado</b></li>
-                                    <li><span><i class="pt-dot"></i>Telefone cadastrado e verificado</span><b>Ativo</b>
-                                    </li>
-                                </ul>
-                                <button type="button" class="pt-btn-link pt-btn-senha" id="ptBtnSenha">Alterar
-                                    senha</button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </main>
-
-            <%- include('partials/footer') %>
-
-                <!-- MODAL: Editar perfil -->
-                <div id="ptModalEditar" class="pt-modal-overlay" aria-hidden="true">
-                    <div class="pt-modal" role="dialog" aria-modal="true" aria-labelledby="ptTituloEditar">
-                        <div class="pt-modal-header">
-                            <h3 id="ptTituloEditar">Editar Perfil</h3>
-                            <button type="button" class="pt-modal-x" data-pt-fechar="ptModalEditar"
-                                aria-label="Fechar">&times;</button>
-                        </div>
-                        <form action="/perfil/editar" method="POST">
-                            <div class="pt-modal-grupo">
-                                <label for="ptNome">Nome completo</label>
-                                <input type="text" id="ptNome" name="nome" value="<%= usuario.nome %>" required
-                                    minlength="1" maxlength="100">
-                            </div>
-                            <div class="pt-modal-grupo">
-                                <label for="ptEmail">E-mail</label>
-                                <input type="email" id="ptEmail" name="email" value="<%= usuario.email %>" required
-                                    maxlength="100">
-                            </div>
-                            <div class="pt-modal-grupo">
-                                <label for="ptIdade">Idade</label>
-                                <input type="number" id="ptIdade" name="idade" value="<%= usuario.idade || '' %>"
-                                    required min="18">
-                            </div>
-                            <div class="pt-modal-grupo">
-                                <label for="ptBio">Apresentação</label>
-                                <input type="text" id="ptBio" name="bio" value="<%= usuario.bio || '' %>"
-                                    maxlength="150" placeholder="Ex.: Disponível para pequenos reparos">
-                            </div>
-                            <div class="pt-modal-grupo">
-                                <label>CPF (não alterável)</label>
-                                <input type="text" value="<%= usuario.cpf %>" disabled class="pt-input-desabilitado">
-                            </div>
-                            <div class="pt-modal-acoes">
-                                <button type="button" class="pt-modal-cancelar"
-                                    data-pt-fechar="ptModalEditar">Cancelar</button>
-                                <button type="submit" class="pt-modal-salvar">Salvar Alterações</button>
-                            </div>
-                        </form>
-                    </div>
+                <div class="duas-colunas">
+                    <section>
+                        <h3 class="sub-titulo">Conta e segurança</h3>
+                        <ul class="lista-seguranca">
+                            <li>
+                                <span><i class="dot"></i>Dados pessoais cadastrados</span>
+                                <b>Ativo</b>
+                            </li>
+                            <li>
+                                <span><i class="dot"></i>Perfil de contratante</span>
+                                <b>Ativo</b>
+                            </li>
+                        </ul>
+                        <button type="button" class="btn-link btn-senha" id="btnAlterarSenha">Alterar senha</button>
+                    </section>
                 </div>
+            </div>
+        </section>
+    </main>
 
-                <!-- MODAL: Alterar senha -->
-                <div id="ptModalSenha" class="pt-modal-overlay" aria-hidden="true">
-                    <div class="pt-modal" role="dialog" aria-modal="true" aria-labelledby="ptTituloSenha">
-                        <div class="pt-modal-header">
-                            <h3 id="ptTituloSenha">Alterar Senha</h3>
-                            <button type="button" class="pt-modal-x" data-pt-fechar="ptModalSenha"
-                                aria-label="Fechar">&times;</button>
-                        </div>
-                        <form action="/perfil/alterar-senha" method="POST" id="ptFormSenha">
-                            <div class="pt-modal-grupo">
-                                <label for="senhaAtual">Senha atual</label>
-                                <input type="password" id="senhaAtual" name="senhaAtual" required maxlength="72"
-                                    placeholder="Digite sua senha atual">
-                            </div>
-                            <div class="pt-modal-grupo">
-                                <label for="novaSenha">Nova senha</label>
-                                <input type="password" id="novaSenha" name="novaSenha" required minlength="6"
-                                    maxlength="72" placeholder="Digite a nova senha">
-                            </div>
-                            <div class="pt-modal-grupo">
-                                <label for="confirmarNovaSenha">Confirmar nova senha</label>
-                                <input type="password" id="confirmarNovaSenha" name="confirmarNovaSenha" required
-                                    minlength="6" maxlength="72" placeholder="Repita a nova senha">
-                                <small class="pt-erro" id="ptErroSenha" hidden>As senhas não coincidem.</small>
-                            </div>
-                            <div class="pt-modal-acoes">
-                                <button type="button" class="pt-modal-cancelar"
-                                    data-pt-fechar="ptModalSenha">Cancelar</button>
-                                <button type="submit" class="pt-modal-salvar">Salvar Nova Senha</button>
-                            </div>
-                        </form>
-                    </div>
+    <%- include('Partials/footer') %>
+
+    <div id="modalEditarPerfil" class="modal-overlay" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloEditarPerfil">
+            <div class="modal-header">
+                <h3 id="tituloEditarPerfil">Editar Perfil</h3>
+                <button type="button" class="btn-close" data-fechar="modalEditarPerfil" aria-label="Fechar">&times;</button>
+            </div>
+            <form action="/perfil/editar" method="POST">
+                <div class="modal-group">
+                    <label for="nome">Nome completo</label>
+                    <input type="text" id="nome" name="nome" value="<%= usuario.nome %>" required minlength="1" maxlength="100">
                 </div>
-
-                <!-- MODAL: Adicionar habilidade -->
-                <div id="ptModalHabilidade" class="pt-modal-overlay" aria-hidden="true">
-                    <div class="pt-modal" role="dialog" aria-modal="true" aria-labelledby="ptTituloHab">
-                        <div class="pt-modal-header">
-                            <h3 id="ptTituloHab">Adicionar habilidade</h3>
-                            <button type="button" class="pt-modal-x" data-pt-fechar="ptModalHabilidade"
-                                aria-label="Fechar">&times;</button>
-                        </div>
-                        <form action="/perfil/habilidades" method="POST">
-                            <div class="pt-modal-grupo">
-                                <label for="ptHabilidade">Habilidade ou especialidade</label>
-                                <input type="text" id="ptHabilidade" name="habilidade" required minlength="2"
-                                    maxlength="40" placeholder="Ex.: Instalação elétrica">
-                            </div>
-                            <div class="pt-modal-acoes">
-                                <button type="button" class="pt-modal-cancelar"
-                                    data-pt-fechar="ptModalHabilidade">Cancelar</button>
-                                <button type="submit" class="pt-modal-salvar">Adicionar</button>
-                            </div>
-                        </form>
-                    </div>
+                <div class="modal-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" value="<%= usuario.email %>" required maxlength="100">
                 </div>
+                <div class="modal-group">
+                    <label for="idade">Idade</label>
+                    <input type="number" id="idade" name="idade" value="<%= usuario.idade || '' %>" required min="18">
+                </div>
+                <div class="modal-group">
+                    <label>CPF (não alterável)</label>
+                    <input type="text" value="<%= usuario.cpf %>" disabled class="input-disabled">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal-cancel" data-fechar="modalEditarPerfil">Cancelar</button>
+                    <button type="submit" class="btn-modal-save">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                <script src="/js/perfilTrabalhador.js"></script>
+    <div id="modalAlterarSenha" class="modal-overlay" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="tituloAlterarSenha">
+            <div class="modal-header">
+                <h3 id="tituloAlterarSenha">Alterar Senha</h3>
+                <button type="button" class="btn-close" data-fechar="modalAlterarSenha" aria-label="Fechar">&times;</button>
+            </div>
+            <form action="/perfil/alterar-senha" method="POST" id="formSenha">
+                <div class="modal-group">
+                    <label for="senhaAtual">Senha atual</label>
+                    <input type="password" id="senhaAtual" name="senhaAtual" required maxlength="72" placeholder="Digite sua senha atual">
+                </div>
+                <div class="modal-group">
+                    <label for="novaSenha">Nova senha</label>
+                    <input type="password" id="novaSenha" name="novaSenha" required minlength="6" maxlength="72" placeholder="Digite a nova senha">
+                </div>
+                <div class="modal-group">
+                    <label for="confirmarNovaSenha">Confirmar nova senha</label>
+                    <input type="password" id="confirmarNovaSenha" name="confirmarNovaSenha" required minlength="6" maxlength="72" placeholder="Repita a nova senha">
+                    <small class="erro-form" id="erroSenha" hidden>As senhas não coincidem.</small>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-modal-cancel" data-fechar="modalAlterarSenha">Cancelar</button>
+                    <button type="submit" class="btn-modal-save">Salvar Nova Senha</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/perfilContratante.js"></script>
 </body>
 
 </html>

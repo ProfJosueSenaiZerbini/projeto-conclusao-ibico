@@ -58,10 +58,15 @@ export const cadastrarBico = async (req, res) => {
 
     const valorNumerico = Number(valor);
 
-    if (!Number.isFinite(valorNumerico) || valorNumerico <= 0) {
+    if (
+        typeof valor !== 'string' ||
+        !/^\d{1,8}(?:\.\d{1,2})?$/.test(valor) ||
+        !Number.isFinite(valorNumerico) ||
+        valorNumerico <= 0
+    ) {
         return res.status(400).render('publicarBico', {
             usuario: req.session.usuario,
-            erro: ' O valor do bico deve ser maior que zero.'
+            erro: 'Informe um valor maior que zero, com até duas casas decimais.'
         });
     }
 
@@ -181,7 +186,7 @@ export const exibirBicosAtivosContratante = async (req, res) => {
 
 // 1. Trabalhador se candidata a um bico (RF008)
 export const candidatarAoBico = async (req, res) => {
-    const { bico_id, mensagem } = req.body;
+    const { bico_id, mensagem } = req.body || {};
 
     // Trata a leitura do ID do trabalhador a partir da sessão
     const trabalhador_id = req.session?.usuario?.id || req.session?.usuario?.id_usuario;
@@ -193,34 +198,47 @@ export const candidatarAoBico = async (req, res) => {
     const bicoIdNum = Number(bico_id);
     const trabalhadorIdNum = Number(trabalhador_id);
 
-    const connection = await db.getConnection();
-    try {
-        await connection.beginTransaction();
+    if (
+        !Number.isSafeInteger(bicoIdNum) ||
+        bicoIdNum <= 0 ||
+        !Number.isSafeInteger(trabalhadorIdNum) ||
+        trabalhadorIdNum <= 0
+    ) {
+        return res.status(400).send('Identificador de bico ou trabalhador inválido.');
+    }
 
-        // 1. Sem colchetes na desestruturação
+    if (mensagem != null && typeof mensagem !== 'string') {
+        return res.status(400).send('A mensagem da candidatura deve ser um texto.');
+    }
+
+    let connection;
+    let transacaoAtiva = false;
+    try {
+        connection = await db.getConnection();
+        await connection.beginTransaction();
+        transacaoAtiva = true;
+
         const resBicos = await connection.query(
-            'SELECT * FROM bicos WHERE id = ? AND status = "Aberto"',
+            "SELECT id FROM bicos WHERE id = ? AND status = 'Aberto' FOR UPDATE",
             [bicoIdNum]
         );
 
-        // Trata a resposta vinda do banco
-        const bicos = Array.isArray(resBicos[0]) ? resBicos[0] : resBicos;
+        const bico = obterPrimeiraLinha(resBicos);
 
-        if (!bicos || bicos.length === 0) {
+        if (!bico) {
             await connection.rollback();
+            transacaoAtiva = false;
             return res.status(400).send('Este bico não está disponível para candidaturas.');
         }
 
-        // 2. Insere a candidatura (sem colchetes em result)
         const resInsert = await connection.query(
-            'INSERT INTO candidaturas (bico_id, trabalhador_id, mensagem, status) VALUES (?, ?, ?, "Pendente")',
-            [bicoIdNum, trabalhadorIdNum, mensagem || null]
+            "INSERT INTO candidaturas (bico_id, trabalhador_id, mensagem, status) VALUES (?, ?, ?, 'Pendente')",
+            [bicoIdNum, trabalhadorIdNum, mensagem?.trim() || null]
         );
 
-        const result = Array.isArray(resInsert[0]) ? resInsert[0] : resInsert;
+        const result = obterLinhas(resInsert);
         const candidaturaId = result.insertId;
 
-        // 3. Insere o histórico de candidatura
         await connection.query(
             `INSERT INTO historico_candidaturas (candidatura_id, status_anterior, status_novo, alterado_por, observacao)
              VALUES (?, NULL, 'Pendente', ?, 'Trabalhador candidatou-se à vaga')`,
@@ -228,57 +246,29 @@ export const candidatarAoBico = async (req, res) => {
         );
 
         await connection.commit();
+        transacaoAtiva = false;
         return res.redirect('/hometrabalhador');
 
     } catch (erro) {
-        await connection.rollback();
+        if (connection && transacaoAtiva) {
+            try {
+                await connection.rollback();
+            } catch (erroRollback) {
+                console.error('Erro ao reverter candidatura:', erroRollback);
+            }
+        }
         console.error('❌ DETALHE DO ERRO AO CANDIDATAR:', erro);
 
-        if (erro.code === 'ER_DUP_ENTRY') {
+        if (erro?.code === 'ER_DUP_ENTRY' || erro?.errno === 1062) {
             return res.status(400).send('Você já se candidatou a este bico!');
         }
 
         return res.status(500).send('Erro interno ao processar candidatura.');
     } finally {
-        connection.release();
+        connection?.release();
     }
 };
 
-
-// 2. Contratante lista candidatos de um bico específico (RF005)
-export const criarListadorCandidatosBico = (banco) => async (req, res) => {
-    const { bico_id } = req.params;
-    const contratante_id = req.session?.usuario?.id;
-
-    if (!contratante_id) {
-        return res.redirect('/login');
-    }
-
-    try {
-        const query = `
-            SELECT 
-                c.id AS candidatura_id,
-                c.status AS status_candidatura,
-                c.mensagem,
-                DATE_FORMAT(c.criado_em, '%d/%m/%Y %H:%i') AS data_candidatura_formatada,
-                u.id AS trabalhador_id,
-                u.nome AS nome_trabalhador,
-                u.email AS email_trabalhador,
-                u.idade AS idade_trabalhador
-            FROM candidaturas c
-            JOIN usuarios u ON c.trabalhador_id = u.id
-            JOIN bicos b ON c.bico_id = b.id
-            WHERE c.bico_id = ? AND b.contratante_id = ?
-            ORDER BY c.criado_em DESC
-        `;
-
-        const candidatos = await banco.query(query, [bico_id, contratante_id]);
-        return res.render('candidatosBico', { candidatos, bico_id });
-    } catch (erro) {
-        console.error('❌ Erro ao listar candidatos:', erro);
-        return res.status(500).send('Erro ao buscar candidatos.');
-    }
-};
 
 // 3. Contratante escolhe ou recusa um candidato (RF005 / US13)
 const obterLinhas = (resultado) => (
@@ -440,8 +430,6 @@ export const criarAtualizadorStatusCandidatura = (banco) => async (req, res) => 
         connection?.release();
     }
 };
-
-export const listarCandidatosBico = criarListadorCandidatosBico(db);
 
 export const atualizarStatusCandidatura = criarAtualizadorStatusCandidatura(db);
 
@@ -879,4 +867,3 @@ export const cancelarCandidatura = async (req, res) => {
         connection?.release();
     }
 };
-

@@ -6,10 +6,17 @@ export const exibirPerfil = async (req, res) => {
     const sessao = req.session?.usuario;
     if (!sessao) return res.redirect('/login');
     try {
-        const rows = await pool.query("SELECT id, nome, email, cpf, idade, tipo_perfil, DATE_FORMAT(criado_em, '%d/%m/%Y') AS data_cadastro_formatada FROM usuarios WHERE id = ?", [sessao.id || sessao.id_usuario]);
+        const rows = await pool.query("SELECT id, nome, email, cpf, idade, tipo_perfil, saldo_simulado, DATE_FORMAT(criado_em, '%d/%m/%Y') AS data_cadastro_formatada FROM usuarios WHERE id = ?", [sessao.id || sessao.id_usuario]);
         const usuario = rows[0];
         if (!usuario) return res.redirect('/login');
-        return res.render(usuario.tipo_perfil?.toLowerCase() === 'trabalhador' ? 'perfilTrabalhador' : 'perfilContratante', { usuario });
+        const tipoPerfil = usuario.tipo_perfil?.trim().toLowerCase();
+        if (tipoPerfil === 'trabalhador') {
+            return res.render('perfilTrabalhador', { usuario });
+        }
+        if (tipoPerfil === 'contratante') {
+            return res.render('perfilContratante', { usuario });
+        }
+        return res.status(403).send('Acesso negado para o perfil desta conta.');
     } catch (erro) {
         console.error('Erro ao exibir perfil:', erro?.code || 'erro inesperado');
         return res.status(500).send('Erro ao carregar os dados do perfil.');

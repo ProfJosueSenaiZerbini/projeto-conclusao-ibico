@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 function gerarCpfDeUmNove() {
-    return Math.floor(10000000000 + Math.random() * 90000000000).toString();
+    return Array.from({ length: 11 }, () => Math.floor(Math.random() * 9) + 1).join('');
 }
 
 // ==========================================
@@ -166,7 +166,6 @@ test('deve realizar o cadastro e o login com sucesso como Contratante', async ({
 
     const cpfAleatorio = gerarCpfDeUmNove();
     const emailDinamico = `contratante_${Date.now()}@gmail.com`;
-    const emailContratanteFixo = 'silvaliuson778@gmail.com';
     const senhaPadrao = '123456';
 
     await page.locator('#cardContratante').click();
@@ -182,21 +181,11 @@ test('deve realizar o cadastro e o login com sucesso como Contratante', async ({
     await page.locator('#idade').check();
     await page.locator('#btnSubmit').click();
 
-    // Aguarda mudança de URL após o cadastro (seja redirecionando para o login ou direto para a home)
-    try {
-        await page.waitForURL(/login|homeContratante/, { timeout: 5000 });
-    } catch {
-        await page.goto('http://localhost:3000/login');
-    }
-
-
-    // Se foi para o login, faz o login com o e-mail fixo
-    if (page.url().includes('login')) {
-        await page.locator('#btnHire').click();
-        await page.locator('input[name="email"]').fill(emailContratanteFixo);
-        await page.locator('input[name="senha"]').fill(senhaPadrao);
-        await page.locator('#submitBtn').click();
-    }
+    await expect(page).toHaveURL('http://localhost:3000/login');
+    await page.locator('#btnHire').click();
+    await page.locator('input[name="email"]').fill(emailDinamico);
+    await page.locator('input[name="senha"]').fill(senhaPadrao);
+    await page.locator('#submitBtn').click();
 
     await expect(page).toHaveURL('http://localhost:3000/homeContratante');
 });
@@ -206,7 +195,6 @@ test('deve realizar o cadastro e o login com sucesso como Trabalhador', async ({
 
     const cpfAleatorio = gerarCpfDeUmNove();
     const emailDinamico = `trabalhador_${Date.now()}@gmail.com`;
-    const emailTrabalhadorFixo = 'afonsocarbosaaraujo67@gmail.com';
     const senhaPadrao = '123456';
 
     await page.locator('#cardTrabalhador').click();
@@ -221,18 +209,11 @@ test('deve realizar o cadastro e o login com sucesso como Trabalhador', async ({
 
     await page.locator('#btnSubmit').click();
 
-    try {
-        await page.waitForURL(/login|hometrabalhador/, { timeout: 5000 });
-    } catch {
-        await page.goto('http://localhost:3000/login');
-    }
-
-    if (page.url().includes('login')) {
-        await page.locator('#btnWork').click();
-        await page.locator('input[name="email"]').fill(emailTrabalhadorFixo);
-        await page.locator('input[name="senha"]').fill(senhaPadrao);
-        await page.locator('#submitBtn').click();
-    }
+    await expect(page).toHaveURL('http://localhost:3000/login');
+    await page.locator('#btnWork').click();
+    await page.locator('input[name="email"]').fill(emailDinamico);
+    await page.locator('input[name="senha"]').fill(senhaPadrao);
+    await page.locator('#submitBtn').click();
 
     await expect(page).toHaveURL('http://localhost:3000/hometrabalhador');
 });
