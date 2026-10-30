@@ -15,12 +15,12 @@
 
     <%- include('Partials/headertrabalhador') %>
 
-        <% const listaConcluidos=(typeof concluidos !=='undefined' ) ? concluidos : []; const abas=[ { id: 'aceitos' ,
+        <% const listaConcluidos=(typeof concluidos !=='undefined' ) ? concluidos : []; const listaCancelados=(typeof cancelados !=='undefined' ) ? cancelados : []; const abas=[ { id: 'aceitos' ,
             titulo: 'Bicos Aceitos' , lista: aceitos, tipo: 'aceito' , vazio: 'Você ainda não possui bicos aceitos.' },
             { id: 'pendentes' , titulo: 'Bicos Pendentes' , lista: pendentes, tipo: 'pendente' ,
             vazio: 'Você não tem nenhuma candidatura pendente.' }, { id: 'concluidos' , titulo: 'Concluídos' , lista:
             listaConcluidos, tipo: 'concluido' , vazio: 'Você ainda não concluiu nenhum bico.' }, { id: 'cancelados' ,
-            titulo: 'Cancelados' , lista: cancelados, tipo: 'cancelado' ,
+            titulo: 'Cancelados' , lista: listaCancelados, tipo: 'cancelado' ,
             vazio: 'Você não possui candidaturas canceladas.' } ]; %>
 
             <main class="page">

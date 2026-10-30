@@ -282,12 +282,35 @@ export const exibirHistoricoTrabalhador = async (req, res) => {
             ORDER BY c.criado_em DESC
         `;
 
+        const queryCancelados = `
+            SELECT
+                c.id AS candidatura_id,
+                b.id AS bico_id,
+                b.titulo,
+                b.descricao,
+                b.valor,
+                b.status AS bico_status,
+                DATE_FORMAT(b.data_servico, '%d/%m/%Y') AS data_servico_formatada,
+                h.status_anterior,
+                h.status_novo,
+                DATE_FORMAT(h.data_alteracao, '%d/%m/%Y %H:%i') AS data_alteracao_formatada,
+                h.observacao
+            FROM candidaturas c
+            JOIN bicos b ON c.bico_id = b.id
+            LEFT JOIN historico_candidaturas h
+                ON h.candidatura_id = c.id AND h.status_novo = 'Cancelado'
+            WHERE c.trabalhador_id = ? AND c.status = 'Cancelado'
+            ORDER BY h.data_alteracao DESC
+        `;
+
         const bicosAceitos = await pool.query(queryAceitos, [trabalhador_id]);
         const bicosPendentes = await pool.query(queryPendentes, [trabalhador_id]);
+        const bicosCancelados = await pool.query(queryCancelados, [trabalhador_id]);
 
         return res.render('historicoTrabalhador', {
             aceitos: bicosAceitos,
             pendentes: bicosPendentes,
+            cancelados: bicosCancelados,
             usuario: req.session.usuario
         });
 
