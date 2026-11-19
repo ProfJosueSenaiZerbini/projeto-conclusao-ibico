@@ -54,7 +54,13 @@ Todas as tabelas têm `id INT AUTO_INCREMENT` como chave primária. Colunas de d
 | valor | DECIMAL(10,2) | valor simulado; CHECK `> 0` |
 | data_servico | DATE | data do serviço |
 | horario | VARCHAR(20) | |
-| bairro | VARCHAR(100) | |
+| bairro | VARCHAR(100) | obrigatório; nos bicos com endereço verificado, vem da consulta do CEP |
+| cep | CHAR(8), nulo | só os 8 dígitos, sem traço; nulo nos bicos publicados antes da verificação pelo CEP |
+| logradouro | VARCHAR(150), nulo | vem da consulta do CEP |
+| numero | VARCHAR(10), nulo | número do endereço |
+| complemento | VARCHAR(60), nulo | opcional |
+| cidade | VARCHAR(100), nulo | vem da consulta do CEP |
+| uf | CHAR(2), nulo | vem da consulta do CEP |
 | status | ENUM | `Aberto` (padrão), `Em andamento`, `Finalizado`, `Cancelado` |
 | criado_em | TIMESTAMP | data/hora da publicação (padrão: atual) |
 
@@ -62,7 +68,7 @@ Todas as tabelas têm `id INT AUTO_INCREMENT` como chave primária. Colunas de d
 Até duas avaliações por bico: uma de cada participante (`UNIQUE (bico_id, avaliador_id)`), o contratante avaliando o trabalhador e o trabalhador avaliando o contratante; `CHECK (avaliador_id <> avaliado_id)`. `bico_id`, `avaliador_id` e `avaliado_id` são FKs (bicos / usuarios / usuarios). `nota` TINYINT com CHECK entre 1 e 5; `comentario` VARCHAR(500) opcional; `criado_em` TIMESTAMP da primeira avaliação; `data_atualizacao` TIMESTAMP atualizado automaticamente a cada alteração.
 
 ### historico_eventos_bicos
-Eventos de status do bico (hoje, a finalização). `bico_id` (FK, `ON DELETE RESTRICT`), `usuario_id` (FK), `tipo_evento` VARCHAR(50), `status_anterior` e `status_novo` (ENUM igual ao de `bicos`, opcionais), `observacao` VARCHAR(255), `data_evento` TIMESTAMP.
+Eventos de status do bico (hoje, a finalização e o cancelamento: `tipo_evento` `Finalizacao` ou `Cancelamento`). `bico_id` (FK, `ON DELETE RESTRICT`), `usuario_id` (FK), `tipo_evento` VARCHAR(50), `status_anterior` e `status_novo` (ENUM igual ao de `bicos`, opcionais), `observacao` VARCHAR(255), `data_evento` TIMESTAMP.
 
 ### candidaturas
 Liga o trabalhador ao bico. `bico_id` (FK, `ON DELETE CASCADE`), `trabalhador_id` (FK, `ON DELETE CASCADE`), `status` ENUM `Pendente` (padrão), `Aceito`, `Recusado`, `Cancelado`; `mensagem` TEXT opcional; `criado_em`; `atualizado_em` (atualiza automaticamente). Restrição única `(bico_id, trabalhador_id)`: o mesmo trabalhador não se candidata duas vezes ao mesmo bico.
@@ -87,7 +93,7 @@ Extrato da carteira simulada. `usuario_id` (FK), `bico_id` (FK, nulo para adiç�
 ## Regras garantidas pelo banco
 
 - E-mail e CPF únicos; saldo nunca negativo; idade entre 18 e 90; valor do bico e das movimentações maior que zero; nota de 1 a 5.
-- Uma candidatura por trabalhador em cada bico; uma avaliação por bico; uma reserva, um crédito e um estorno por bico.
+- Uma candidatura por trabalhador em cada bico; até duas avaliações por bico, uma de cada participante, e ninguém avalia a si mesmo; uma reserva, um crédito e um estorno por bico.
 
 ## Exclusões (chaves estrangeiras)
 
@@ -117,4 +123,4 @@ Efeito prático:
 
 - O `sql_mode` padrão do XAMPP não é estrito: um texto longo demais seria cortado e um valor de ENUM inválido seria gravado como texto vazio, ambos apenas com aviso. A aplicação valida os dados antes de gravar. Os CHECKs são aplicados mesmo sem modo estrito.
 - O contratante pode cancelar um bico `Aberto` ou `Em andamento` (`POST /bicos/:id/cancelar`). No segundo caso, a reserva volta ao saldo dele e é registrada como `ESTORNO` em `movimentacoes_carteira`. Bico finalizado não pode ser cancelado. Todos os valores permanecem simulados.
-- Para quem já tem um banco antigo: este script não migra dados existentes. As diferenças para o schema antigo são os CHECKs de `usuarios` e `bicos`, a coluna `bicos.criado_em` e o charset/motor explícitos.
+- Para quem já tem um banco antigo: este script não migra dados existentes. As mudanças de estorno, avaliação bidirecional e endereço do bico têm migração (veja [Migrações](#migrações)); os CHECKs de `usuarios` e `bicos`, a coluna `bicos.criado_em` e o charset/motor explícitos não têm.
