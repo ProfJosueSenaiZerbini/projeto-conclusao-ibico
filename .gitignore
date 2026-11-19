@@ -1,24 +1,27 @@
 # Dependências do Node
 node_modules/
-artifacts/
-test-results/
-/playwright-report/
-# Arquivo de configuração local (contém senhas e dados sensíveis)
-.env
 
-# Arquivos de log de erros do npm
+# Logs de erro do npm e do yarn
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Pastas do sistema operacional (opcional)
+# Configuração local (contém senhas e dados sensíveis); o modelo .env.example é versionado
+.env
+.env.*
+!.env.example
+
+# Resultados e relatórios dos testes
+artifacts/
+test-results/
+/playwright-report/
+
+# Arquivos do sistema operacional
 .DS_Store
 Thumbs.db
-.env*
-.flaskenv*
-!.env.project
-!.env.vault
+
 # Pacote de capturas de tela do TCC (arquivo para enviar; as imagens ficam em Docs/Prints/)
 Docs/Prints.zip
+
 # Documento do TCC (fica só no computador de quem escreve)
 Docs/Trabalho Conclusão/
