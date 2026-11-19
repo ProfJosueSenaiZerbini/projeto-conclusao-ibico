@@ -20,3 +20,5 @@ Thumbs.db
 !.env.vault
 # Pacote de capturas de tela do TCC (arquivo para enviar; as imagens ficam em Docs/Prints/)
 Docs/Prints.zip
+# Documento do TCC (fica só no computador de quem escreve)
+Docs/Trabalho Conclusão/
