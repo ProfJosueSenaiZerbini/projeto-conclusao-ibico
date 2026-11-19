@@ -1,11 +1,10 @@
 {
-  "name": "gigfasts",
+  "name": "ibico",
   "version": "1.0.0",
-  "description": "",
+  "description": "Plataforma que conecta contratantes a trabalhadores de bicos (TCC SENAI)",
   "license": "ISC",
-  "author": "",
+  "author": "Equipe iBico",
   "type": "module",
-  "main": "index.js",
   "scripts": {
     "test": "playwright test",
     "test:unit": "node --test \"tests/unit/*.unit.js\"",
