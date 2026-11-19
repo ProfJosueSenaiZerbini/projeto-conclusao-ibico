@@ -181,7 +181,6 @@ export const criarCadastradorBico =
                 horario
             ]);
 
-            console.log(`✅ Novo bico publicado com sucesso por contratante ID ${contratante_id}!`);
             return res.redirect('/homeContratante');
         } catch (erro) {
             console.error('❌ Erro ao cadastrar bico no banco:', erro);
@@ -1476,7 +1475,6 @@ export const exibirGerenciamentoBico = async (req, res) => {
         const bicoEncontrado = Array.isArray(bicos) ? bicos[0] : bicos;
 
         if (!bicoEncontrado) {
-            console.log(`⚠️ Bico ID ${bicoIdNum} não encontrado para o Contratante ID ${contratanteIdNum}`);
             return res.status(404).send('Bico não encontrado ou você não tem permissão para acessá-lo.');
         }
 

@@ -97,7 +97,7 @@ app.get('/', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`ta rodando? http://localhost:${PORT}`);
+    console.log(`Servidor do iBico rodando em http://localhost:${PORT}`);
     if (modoCepFalso()) {
         console.warn('⚠️  CEP_FAKE=1: os CEPs são consultados num provedor falso em memória (modo de teste).');
     }
