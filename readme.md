@@ -10,15 +10,17 @@ O **iBico** é uma plataforma desenvolvida para conectar **contratantes** a **pr
 - **Pedro Henrique** — [GitHub](https://github.com/Pedrin-com)
 - **Bruno Henrique** — [GitHub](https://github.com/araujonascimentobrunohentique-crypto)
 - **Francisco Kaique** — [GitHub](https://github.com/francisco292)
-- **Victor Barros** — [GitHub](https://github.com/usuario4)
+- **Victor Barros**
 
 ---
 
 ## 🛠️ Tecnologias
 
 - **Backend:** Node.js + Express
+- **Front-end:** EJS (views renderizadas no servidor), CSS e JavaScript
 - **Banco de dados:** MySQL / MariaDB
-- **Modelagem:** DBML / dbdiagram.io
+- **Modelagem:** diagrama entidade-relacionamento (notação de Peter Chen)
+- **Testes:** Playwright (E2E) e `node:test` (unitários)
 
 ---
 
@@ -67,24 +69,19 @@ Substitua `seu_usuario` pelo usuário do seu banco de dados. O terminal solicita
 
 Ou, pelo **phpMyAdmin / MySQL Workbench**, abra o arquivo `schema.sql` e execute o script completo.
 
-> **Banco já criado antes do cancelamento de bico?** Execute uma vez `migrations/001_estorno.sql` (adiciona o tipo `ESTORNO` à tabela `movimentacoes_carteira`). Quem criou o banco com o `schema.sql` atual não precisa.
+> **Banco criado com um `schema.sql` anterior?** Execute uma vez, nesta ordem, as migrações da pasta `migrations/` que ainda não aplicou: `001_estorno.sql`, `002_avaliacao_bidirecional.sql` e `003_endereco_bico.sql`. Quem cria o banco do zero com o `schema.sql` atual não precisa delas.
 
 ### 4. 🔐 Configure as variáveis de ambiente
 
-Crie um arquivo chamado `.env` na raiz do projeto com as seguintes variáveis:
+Copie o arquivo `.env.example` para `.env`, na raiz do projeto:
 
-```env
-DB_HOST=localhost
-DB_USER=seu_usuario
-DB_PASSWORD=sua_senha
-DB_NAME=db_bico
-DB_PORT=3306
-PORT=3000
-NODE_ENV=development
-SESSION_SECRET=
+```bash
+cp .env.example .env
 ```
 
-Substitua os valores do banco de dados pelas suas próprias configurações.
+No Windows, você também pode copiar o `.env.example` e renomear a cópia para `.env`.
+
+Depois, preencha os valores no `.env` (dados do seu banco, `PORT`, `NODE_ENV` e `SESSION_SECRET`). Os comentários do próprio arquivo explicam cada variável.
 
 **Gere sua própria `SESSION_SECRET`:**
 

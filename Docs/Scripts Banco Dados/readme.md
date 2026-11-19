@@ -17,7 +17,11 @@ O script oficial de criação é o [`schema.sql`](../../schema.sql), na raiz do 
 
 A pasta [`migrations/`](../../migrations) tem scripts para bancos que já foram criados com um `schema.sql` anterior. Quem cria o banco do zero com o `schema.sql` atual não precisa deles.
 
-- `001_estorno.sql`: adiciona `ESTORNO` ao ENUM `movimentacoes_carteira.tipo_movimentacao` (cancelamento de bico com estorno simulado). Execute uma única vez no `db_bico` (phpMyAdmin → SQL, ou MySQL Workbench). Não altera linhas existentes.
+Execute cada uma uma única vez no `db_bico` (phpMyAdmin → SQL, ou MySQL Workbench), na ordem abaixo, pulando as que já aplicou:
+
+- `001_estorno.sql`: adiciona `ESTORNO` ao ENUM `movimentacoes_carteira.tipo_movimentacao` (cancelamento de bico com estorno simulado). Não altera linhas existentes.
+- `002_avaliacao_bidirecional.sql`: permite que contratante e trabalhador se avaliem no mesmo bico. Em `avaliacoes`, troca `UNIQUE (bico_id)` por `UNIQUE (bico_id, avaliador_id)`, cria a coluna `criado_em` (preenchida com a `data_atualizacao` nas avaliações antigas) e acrescenta `CHECK (avaliador_id <> avaliado_id)`.
+- `003_endereco_bico.sql`: adiciona a `bicos` as colunas do endereço verificado pelo CEP (`cep`, `logradouro`, `numero`, `complemento`, `cidade`, `uf`), todas aceitando NULL; bicos antigos continuam exibindo só o bairro.
 
 ## Tabelas
 
